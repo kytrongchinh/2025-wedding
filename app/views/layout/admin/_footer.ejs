@@ -1,0 +1,93 @@
+<footer class="main-footer">
+    <div class="pull-right hidden-xs">
+        <b>Version</b> 2.0.0
+    </div>
+    <strong>Copyright &copy; 2023 Adtima Tech.</strong> All rights
+    reserved.
+</footer>
+<!-- jQuery UI 1.11.4 -->
+<!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script> -->
+<script src="<%=publicUrl%>admin/js/jquery-ui.min.js"></script>
+
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script type="text/javascript">
+    $.widget.bridge('uibutton', $.ui.button);
+</script>
+
+<!-- Bootstrap 3.3.7 -->
+<script src="<%=publicUrl%>admin/js/bootstrap.min.js"></script>
+
+<!-- Morris.js charts -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script> -->
+
+<!-- Sparkline -->
+<script src="<%=publicUrl%>admin/js/sparkline/jquery.sparkline.min.js"></script>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script src="<%=publicUrl%>admin/js/jquery.alerts.js"></script>
+
+<!-- AdminLTE App -->
+<script src="<%=publicUrl%>admin/js/app.min.js"></script>
+
+<script src="<%=publicUrl%>admin/js/moment-with-locales.min.js"></script>
+<script src="<%=publicUrl%>admin/js/bootstrap-datetimepicker.min.js"></script>
+<script src="<%=publicUrl%>admin/js/admin.js?v=<%=_versionCache%>"></script>
+
+
+<script>
+    function fallbackCopyTextToClipboard(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        // $("#input-url").val(text);
+        // $("#input-url").select();
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            // console.log('Fallback: Copying text command was ' + msg);
+        } catch (err) {
+            //  console.error('Fallback: Oops, unable to copy', err);
+        }
+
+        document.body.removeChild(textArea);
+    }
+
+    function copyTextToClipboard(text) {
+        if (!navigator.clipboard) {
+            fallbackCopyTextToClipboard(text);
+            return;
+        }
+        navigator.clipboard.writeText(text).then(function () {
+            //console.log('Async: Copying to clipboard was successful!');
+        }, function (err) {
+            // console.error('Async: Could not copy text: ', err);
+        });
+    }
+
+
+    function click_copy_data_in_list(e) {
+        let $this = $(e);
+        var content = $this.text();
+        console.log(content)
+        copyTextToClipboard(content);
+    }
+</script>
+<link rel="stylesheet" href="<%=publicUrl%>admin/js/fancybox-bootstrap/jquery.fancybox.min.css" media="screen">
+<script src="<%=publicUrl%>admin/js/fancybox-bootstrap/jquery.fancybox.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //FANCYBOX
+        //https://github.com/fancyapps/fancyBox
+        $(".fancybox").fancybox({
+            openEffect: "none",
+            closeEffect: "none"
+        });
+    });
+</script>

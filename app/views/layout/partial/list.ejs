@@ -1,0 +1,130 @@
+<%- include('../../layout/admin/_head') -%>
+
+<!-- Content Header (Page header) -->
+<section class="content-header form-inline">
+    <h1>List <%= mod_alias%><small><a href="<%= mod_url%>"><i class="fa fa-refresh"></i></a></small>
+    </h1>
+    <ol class="breadcrumb pull-right">
+        <li><a href="<%= mod_url%>"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active"><%= mod_alias%></li>
+    </ol>
+</section>
+<div class="clearfix"></div>
+
+<section class="content-header">
+    <form class="form-inline">
+        <div class="form-group">
+            <input type="text" name="from_date"  value="<%=helpers.admin.get_query_data(query_get,'from_date')%>" class="form-control datepicker" placeholder="From date">
+            <input type="text" name="to_date"  value="<%=helpers.admin.get_query_data(query_get,'to_day')%>" class="form-control datepicker" placeholder="To date">
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <div class="right pull-right">
+            <% if(perms.indexOf('add') != -1){ %>
+            <a href="<%= mod_url%>/add">
+                <button type="button" class="btn btn-primary">Add</button>
+            </a>
+            <%}%>
+
+            <% if(perms.indexOf('delete') != -1){ %>
+            <button type="button" class="btn btn-primary JsDeleteItem">Delete</button>
+            <%}%>
+
+            <% if(perms.indexOf('export') != -1){ %>
+            <a data-check="<%= mod_url%>/export?q=1" data-export="<%= mod_url%>/export?<%=query_string%>" data-total="<%= total_record%>" role="button" onclick="Admin.export_data(this);">
+                <button type="button" class="btn btn-primary">Export</button>
+            </a>
+            <%}%>
+
+        </div>
+    </form>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <form action="<%= mod_url%>/delete" class="JsDeleteForm" method="post">
+                    <div class="box-header">
+                        <h3 class="box-title">Total: <%= total_record%> records</h3>
+                    </div>
+
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th class="col_checkbox">
+                                    <div class="checkbox">
+                                        <input id="checkbox_all" class="styled" type="checkbox">
+                                        <label for="checkbox_all"></label>
+                                    </div>
+                                </th>
+                                <% Object.keys(fields).forEach(function(field){ %>
+                                <% let field_type = fields[field]; %>
+                                <th class="sorting">
+                                    <%- helpers.admin.sort_field(field, curent_url)%>
+                                    <div class="filter_sort">
+                                        <a href="javascript:void(0);" data-filter="filter_<%= field%>" data-toggle="hide" class="filter"><i class="fa fa-filter"></i></a>
+                                    </div>
+                                    <br>
+                                    <div class="wrapper_filter">
+                                        <% if(field_type == 'Boolean'){ %>
+                                        <select onchange="Admin.filter_submit();" class="form-control filter_field hide filter_<%= field%>" name="<%= field%>">
+                                            <option value=""></option>
+                                            <option <% if(helpers.admin.get_query_data(query_get,field) == 'true'){%> selected <%}%> value="true">Active</option>
+                                            <option <% if(helpers.admin.get_query_data(query_get,field) == 'false'){%> selected <%}%> value="false">Disable</option>
+                                        </select>
+                                        <% }else{ %>
+                                        <input class="filter_field hide filter_<%= field%> <% if (field_type == 'Date') { %>datepicker<%}%>" name="<%= field%>" type="text" value="<%=helpers.admin.get_query_data(query_get,field)%>">
+                                        <% } %>
+                                    </div>
+                                </th>
+                                <% }); %>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <% if (lists.length > 0) { %>
+                            <% lists.forEach(function(row) { %>
+                            <tr>
+                                <td class="col_checkbox">
+                                    <div class="checkbox">
+                                        <input id="checkbox<%= row._id%>" class="styled" type="checkbox" name="listViewId" value="<%= row._id%>">
+                                        <label for="checkbox<%= row._id%>"></label>
+                                    </div>
+                                </td>
+
+                                <% Object.keys(fields).forEach(function(field){ %>
+                                <td>
+                                    <%- helpers.admin.get_field_value(field, row[field], fields[field])%>
+                                </td>
+                                <% }); %>
+
+                                <% if(perms.indexOf('edit') != -1){ %>
+                                <td>
+                                    <a title="edit" href="<%=mod_url%>/edit/<%= row._id%>" class="btn action">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                </td>
+                                <%}%>
+                            </tr>
+                            <% }); %>
+                            <% } else { %>
+                            <tr>
+                                <td colspan="<%=  Object.keys(fields).length + 10 %>">No data.</td>
+                            </tr>
+                            <% } %>
+                            </tbody>
+                        </table>
+                        <ul class="pagination pull-right">
+                            <%- output_paging%>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+</div><!--/.content-wrapper-->
+<%- include('../../layout/admin/_footer') -%>
+<%- include('../../layout/admin/_end') -%>

@@ -1,0 +1,9 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+// create a schema
+const objSchema = new Schema({
+<fields>
+},{timestamps:true});
+
+//Create a model using it
+module.exports = mongoose.model('##collection_name##',objSchema,'##collection_name##'); // model name, schema name, collection name

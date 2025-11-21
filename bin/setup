@@ -1,0 +1,533 @@
+#!/usr/bin/env node
+
+/** Setup admin tool
+ * Params: 
+ *     env : develop | staging | production : (default "develop") 
+ *     username : account with role root : (default "root")
+ *     password : password for account : (deffault "")
+ *     action   : install | create | update | reset  : (default "install")
+ *     secret   : SECRET_PASSWORD (see in .env)
+ *     route    : reoute admin (default: "admin")
+ * Example :
+ *     Install new 
+ *     > npm run setup -- env=staging action=install secret=PT4834oqyw username=warrior password=Ro#j82#va9k7
+ *     > npm run setup -- env=develop action=install secret=PTR4834oqyw username=mbud25 password=Ro#j82#va9k7
+ *     Create account
+ *     > npm run setup -- env=develop action=create secret= username= password=
+ *     Update password
+ *     > npm run setup -- env=develop action=update secret= username= password=
+ *     Reset DB
+ *     > npm run setup -- env=develop action=reset secret= username= password=
+ *     View adminUsers
+ *     > npm run setup -- env=develop action=viewdata secret=
+ *
+ * Notes: restart node after installed
+ */
+const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+const bcrypt = require('bcrypt')
+
+const args = process.argv
+if(!args || args.length <= 2){
+    console.log(`\x1b[31m[ERROR]\x1b[0m`,`Missing params`)
+    process.exit(1)
+}
+let params = {env:'develop',action:'install',secret:'',username:'root',password:'',route:'admin'} //default
+args.forEach(item => {
+    let a = item.split('=')
+    if(a.length > 1) params[a[0]] = a[1]
+})
+const env = (params.env) ? params.env : process.env.NODE_ENV
+let dataConfig = dotenv.config({ path: `.env.${env}` })
+
+let connectionString = `mongodb://${dataConfig.parsed.DATABASE_USER}:${dataConfig.parsed.DATABASE_PASS}@${dataConfig.parsed.DATABASE_HOST}:${dataConfig.parsed.DATABASE_PORT}/${dataConfig.parsed.DATABASE_NAME}`;
+// let connectionString = `mongodb://127.0.0.1:27017/warrior_utc_code`;
+if(dataConfig.parsed.DATABASE_REPLICASET){
+    connectionString = `mongodb://${dataConfig.parsed.DATABASE_USER}:${dataConfig.parsed.DATABASE_PASS}@${dataConfig.parsed.DATABASE_REPLICASET}/${dataConfig.parsed.DATABASE_NAME}`;
+}
+
+const options = {
+    readPreference: 'secondaryPreferred', // https://docs.mongodb.com/manual/core/read-preference/#secondaryPreferred
+    maxStalenessSeconds: 120, // Min: 120 // https://docs.mongodb.com/manual/core/read-preference-staleness/#replica-set-read-preference-max-staleness
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    autoIndex: false, // Don't build indexes
+    family: 4, // Use IPv4, skip trying IPv6
+    serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+    socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+    connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
+};
+
+mongoose.set("strictQuery", false)
+mongoose.connect(encodeURI(connectionString), options).then(() => {
+    console.log('\x1b[34m[SUCCESS]\x1b[0m','Connected mongodb success')
+    const cur_db = mongoose.connection.db
+    if(params.action == 'install'){
+        installAdmin(cur_db)
+    }else if(params.action == 'reset'){
+        resetAdmin(cur_db)
+    }else if(params.action == 'update'){
+        updateAdmin(cur_db)
+    }else if(params.action == 'create'){
+        createAdmin(cur_db)
+    }else if(params.action == 'viewdata'){
+        viewData(cur_db)
+    }else{
+        console.log(`\x1b[31m[ERROR]\x1b[0m`,`Invalid params: action`)
+        process.exit(1)
+    }
+}).catch(err => {
+    console.log(`\x1b[31m[ERROR]\x1b[0m`,`Connect database failed with error : ${err.stack}`)
+    process.exit(1);
+});
+
+const checkSecret = async (secret) => {
+    const hashedSecret = await bcrypt.hash(`${dataConfig.parsed.SECRET_PASSWORD}`,9)
+    return await bcrypt.compare(secret, hashedSecret)
+} 
+
+const viewData = async (cur_db) => {
+    let secret = await checkSecret(params.secret)
+    if(secret !== true){
+        throw new Error(`SECRET_PASSWORD incorrect`)
+    }
+    
+    let sessionsCol = await cur_db.collection('adminUsers')
+    let data = sessionsCol.find()
+    for await (const item of data) {
+        if(item.role=='root'){
+            console.log('item',item)
+        }
+    }
+    console.log('\x1b[34m[SUCCESS]\x1b[0m','viewData success')
+    process.exit(1)
+} 
+
+const updateAdmin = async (cur_db) => {
+    try {
+        let secret = await checkSecret(params.secret);
+        if(secret !== true){
+            throw new Error(`SECRET_PASSWORD incorrect`)
+        }
+
+        let re_username = /^[A-Za-z_0-9@.]{4,50}$/;
+        if(typeof params.username === 'undefined' || !re_username.test(params.username)){
+            console.log(`\x1b[33m[WARNING]\x1b[0m`,`Username must be 4 to 20 characters, doesn\'t contain special character`)
+            process.exit(1);
+        }
+
+        let re_pasword = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[\d]).{6,30}$/;
+        if(typeof params.password === 'undefined' || !re_pasword.test(params.password)){
+            console.log(`\x1b[33m[WARNING]\x1b[0m`,`Password must be 6 to 30 characters, at least 1 lowercase, at least 1 uppercase and at least 1 numeric`)
+            process.exit(1);
+        }
+
+        let plaintextPassword = `${params.password}${dataConfig.parsed.SECRET_PASSWORD}`
+        const hashedPassword = await bcrypt.hash(plaintextPassword,9)
+        
+        let dataUpdate = {
+            username : params.username,
+            password : hashedPassword,
+            password_md5 : '',
+            fullname : params.username,
+            is2FAEnabled: false,
+            secret2FA: '',
+            avatar : 'public/admin/images/avatar/default.jpg',
+            role : 'root',
+            status : 1
+        };
+        
+        //update admin users
+        await cur_db.collection('adminUsers').updateOne({username:params.username},{"$set":dataUpdate})
+
+        console.log('\x1b[34m[SUCCESS]\x1b[0m','AdminUser update success')
+        process.exit(1);
+    }catch(e){
+        console.log('\x1b[31m[ERROR]\x1b[0m',e.message)
+        process.exit(1);
+    }
+}
+
+const createAdmin = async (cur_db) => {
+    try{
+        let secret = await checkSecret(params.secret);
+        if(secret !== true){
+            throw new Error(`SECRET_PASSWORD incorrect`)
+        }
+
+        let adminUsers = await cur_db.collection('adminUsers').count({username:params.username})
+        if(adminUsers > 0){
+            throw new Error(`Username is exists`)
+        }
+
+        let regexUsername = /^[A-Za-z_0-9]{4,20}$/;
+        if(typeof params.username === 'undefined' || !regexUsername.test(params.username)){
+            console.log(`\x1b[33m[WARNING]\x1b[0m`,`Username must be 4 to 20 characters, doesn\'t contain special character`)
+            process.exit(1);
+        }
+
+        let regexPasword = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[\d]).{6,30}$/;
+        if(typeof params.password === 'undefined' || !regexPasword.test(params.password)){
+            console.log(`\x1b[33m[WARNING]\x1b[0m`,`Password must be 6 to 30 characters, at least 1 lowercase, at least 1 uppercase and at least 1 numeric`)
+            process.exit(1);
+        }
+        //console.log('params',params);
+        let plaintextPassword = `${params.password}${dataConfig.parsed.SECRET_PASSWORD}`
+        const hashedPassword = await bcrypt.hash(plaintextPassword,9)
+        let data = [{
+            username : params.username,
+            password : hashedPassword,
+            fullname : params.username,
+            avatar : 'public/admin/images/avatar/default.jpg',
+            role : 'root',
+            status : 1,
+            is2FAEnabled: false
+        }];
+        //create admin users
+        await cur_db.collection('adminUsers').insertMany(data);
+        console.log('\x1b[34m[SUCCESS]\x1b[0m',`adminUser: ${params.username} create success`)
+        process.exit(1);
+    }catch(e){
+        console.log('\x1b[31m[ERROR]\x1b[0m',e.message)
+        process.exit(1);
+    }
+}
+
+const installAdmin = async (cur_db) => {
+    try{
+        let secret = await checkSecret(params.secret);
+        if(secret !== true){
+            throw new Error(`SECRET_PASSWORD incorrect`)
+        }
+
+        let adminUsers = await cur_db.collection('adminUsers').estimatedDocumentCount();
+        if(adminUsers > 0){
+            throw new Error(`Admin tool exists`)
+        }
+
+        let re_username = /^[A-Za-z_0-9]{4,20}$/;
+        if(typeof params.username === 'undefined' || !re_username.test(params.username)){
+            console.log(`\x1b[33m[WARNING]\x1b[0m`,`Username must be 4 to 20 characters, doesn\'t contain special character`)
+            process.exit(1);
+        }
+        let re_pasword = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[\d]).{6,30}$/;
+        if(typeof params.password === 'undefined' || !re_pasword.test(params.password)){
+            console.log(`\x1b[33m[WARNING]\x1b[0m`,`Password must be 6 to 30 characters, at least 1 lowercase, at least 1 uppercase and at least 1 numeric`)
+            process.exit(1);
+        }
+        //console.log('params',params);
+        let plaintextPassword = `${params.password}${dataConfig.parsed.SECRET_PASSWORD}`
+        const hashedPassword = await bcrypt.hash(plaintextPassword,9)
+        let data = [{
+            username : params.username,
+            password : hashedPassword,
+            fullname : params.username,
+            avatar : 'public/admin/images/avatar/default.jpg',
+            role : 'root',
+            status : 1,
+            is2FAEnabled: false
+        }];
+        
+        //create admin users
+        await cur_db.collection('adminUsers').insertMany(data);
+        
+        //create module
+        data = [{"name":"admin", "route":`${params.route}`, "status":true}];
+        await cur_db.collection('adminModules').insertMany(data);
+
+        //create roles
+        data = [
+            {role : "root", name : "Root", status:1,weight:100},
+            {role : "qc", name : "QC", status:1,weight:99},
+            {role : "manager", name : "Manager", status:1,weight:9},
+            {role : "admin", name : "Admin", status:1,weight:8},
+            {role : "sale", name : "Sale", status:1,weight:7},
+            {role : "guest", name : "Guest", status:1,weight:0}
+        ];
+        await cur_db.collection('adminRoles').insertMany(data);
+        //create resources
+        data = [
+            {
+                "name" : "dashboard",
+                "module" : "admin",
+                "collection_name" : "",
+                "permissions" : ["view","update-profile"]
+            },
+            {
+                "name" : "users",
+                "module" : "admin",
+                "permissions" : ["view","detail","add","edit","delete","import","export"],
+                "collection_name" : "adminUsers",
+                "default_fields" : [],
+            },
+            {
+                "name" : "modules",
+                "module" : "admin",
+                "permissions" : ["view","detail","add","edit","delete","import","export"],
+                "collection_name" : "adminModules",
+                "default_fields" : []
+            },
+            {
+                "name" : "resources",
+                "module" : "admin",
+                "permissions" : ["view","detail","add","edit","delete","import","export"],
+                "collection_name" : "adminResources",
+                "default_fields" : []
+            },
+            {
+                "module" : "admin",
+                "name" : "permissions",
+                "permissions" : ["view","detail","add","edit","delete","import","export"],
+                "collection_name" : "adminPermissions",
+                "default_fields" : []
+            },
+            {
+                "module" : "admin",
+                "name" : "roles",
+                "permissions" : ["view","detail","add","edit","delete","import","export"],
+                "collection_name" : "adminRoles",
+                "default_fields" : []
+            },
+            {
+                "module" : "admin",
+                "name" : "menus",
+                "permissions" : ["view","detail","add","edit","delete","import","export"],
+                "collection_name" : "adminMenus",
+                "default_fields" : []
+            },
+            {
+                "module" : "admin",
+                "name" : "settings",
+                "permissions" : ["view","detail","add","edit","delete","import","export"],
+                "collection_name" : "adminSettings",
+                "default_fields" : []
+            },
+            {
+                "module" : "admin",
+                "name" : "custom_fields",
+                "permissions" : ["view","detail","add","edit","delete","import","export"],
+                "collection_name" : "adminCustomFields",
+                "default_fields" : []
+            },
+            {
+                "module" : "admin",
+                "name" : "tools",
+                "permissions" : ["view"],
+                "collection_name" : "",
+                "default_fields" : []
+            }
+        ];
+        await cur_db.collection('adminResources').insertMany(data);
+
+        //create permissions
+        data = [
+            {
+                "role" : "manager",
+                "module" : "admin",
+                "resource" : "dashboard",
+                "permissions" : [
+                    "view",
+                    "update-profile"
+                ]
+            },
+            {
+                "role" : "admin",
+                "module" : "admin",
+                "resource" : "dashboard",
+                "permissions" : [
+                    "view",
+                    "update-profile"
+                ]
+            },
+            {
+                "role" : "guest",
+                "module" : "admin",
+                "resource" : "dashboard",
+                "permissions" : [
+                    "view",
+                    "update-profile"
+                ]
+            }
+        ];
+        await cur_db.collection('adminPermissions').insertMany(data);
+
+        //create menu
+        data = [
+            {
+                "name" : "ACL",
+                "link" : "#",
+                "parent_id" : "",
+                "weight" : 1,
+                "is_dashboard" : false,
+                "icon" : "fa-shield",
+                "status" : true
+            },
+            {
+                "name" : "Admin Users",
+                "link" : `${params.route}/users`,
+                "parent_id" : "",
+                "weight" : 0,
+                "is_dashboard" : true,
+                "icon" : "fa-users",
+                "status" : true
+            },
+            {
+                "name" : "Modules",
+                "link" : `${params.route}/modules`,
+                "parent_id" : "",
+                "weight" : 1,
+                "is_dashboard" : true,
+                "icon" : "fa-th-large",
+                "status" : true
+            },
+            {
+                "name" : "Resources",
+                "link" : `${params.route}/resources`,
+                "parent_id" : "",
+                "weight" : 1,
+                "is_dashboard" : true,
+                "icon" : "fa-database",
+                "status" : true
+            },
+            {
+                "name" : "Permissions",
+                "link" : `${params.route}/permissions`,
+                "parent_id" : "",
+                "weight" : 1,
+                "is_dashboard" : true,
+                "icon" : "fa-lock",
+                "status" : true
+            },
+            {
+                "name" : "Roles",
+                "link" : `${params.route}/roles`,
+                "parent_id" : "",
+                "weight" : 1,
+                "is_dashboard" : true,
+                "icon" : "fa-check-square-o",
+                "status" : true
+            },
+            {
+                "name" : "Custom fields",
+                "link" : `${params.route}/custom_fields`,
+                "parent_id" : "",
+                "weight" : 1,
+                "is_dashboard" : true,
+                "icon" : "fa-sliders",
+                "status" : true
+            },
+            {
+                "name" : "Menus",
+                "link" : `${params.route}/menus`,
+                "parent_id" : "",
+                "weight" : 1,
+                "is_dashboard" : true,
+                "icon" : "fa-list-ul",
+                "status" : true
+            },
+            {
+                "name" : "Settings",
+                "link" : `${params.route}/settings`,
+                "parent_id" : "",
+                "weight" : 1,
+                "is_dashboard" : true,
+                "icon" : "fa-cog",
+                "status" : true
+            },
+            {
+                "name" : "Tools",
+                "link" : `${params.route}/tools`,
+                "parent_id" : "",
+                "weight" : 1,
+                "is_dashboard" : true,
+                "icon" : "fa-wrench",
+                "status" : true
+            }
+        ];
+        await cur_db.collection('adminMenus').insertMany(data);
+
+        //create settings
+        data = [
+            {
+                "key" : "language",
+                "value" : "en",
+                "is_system" : 1,
+                "description" : ""
+            },
+            {
+                "key" : "menu_layout",
+                "value" : "left",
+                "is_system" : 1,
+                "description" : ""
+            },
+            {
+                "key" : "grid_limit",
+                "value" : 20,
+                "is_system" : 1,
+                "description" : ""
+            }
+        ];
+        await cur_db.collection('adminSettings').insertMany(data);
+
+        //group by parent
+        let acl = await cur_db.collection('adminMenus').findOne({name:"ACL"});
+        await cur_db.collection('adminMenus').updateMany(
+            {
+                link:{
+                    $in:[`${params.route}/users`,`${params.route}/modules`, `${params.route}/resources`,`${params.route}/permissions`,`${params.route}/roles`,`${params.route}/custom_fields`]
+                }
+            },
+            {
+                "$set":{
+                    "parent_id":String(acl._id)
+                }
+            }
+        );
+
+        console.log('\x1b[34m[SUCCESS]\x1b[0m','Admin tool install success, please restart server !')
+        process.exit(1);
+    }catch(e){
+        console.log('\x1b[31m[ERROR]\x1b[0m',e.message)
+        process.exit(1);
+    }
+}
+
+const resetAdmin = async (cur_db) => {
+    try{
+        let secret = await checkSecret(params.secret);
+        if(secret !== true){
+            throw new Error(`SECRET_PASSWORD incorrect`)
+        }
+
+        let adminUsers = await cur_db.collection('adminUsers').estimatedDocumentCount();
+        if(adminUsers > 0) await cur_db.dropCollection('adminUsers')
+
+        let adminModules = await cur_db.collection('adminModules').estimatedDocumentCount();
+        if(adminModules > 0) await cur_db.dropCollection('adminModules')
+        
+        let adminRoles = await cur_db.collection('adminRoles').estimatedDocumentCount();
+        if(adminRoles > 0) await cur_db.dropCollection('adminRoles') 
+        
+        let adminPermissions = await cur_db.collection('adminPermissions').estimatedDocumentCount();
+        if(adminPermissions > 0) await cur_db.dropCollection('adminPermissions') 
+
+        let adminResources = await cur_db.collection('adminResources').estimatedDocumentCount();
+        if(adminResources > 0) await cur_db.dropCollection('adminResources')
+
+        let adminCustomFields = await cur_db.collection('adminCustomFields').estimatedDocumentCount();
+        if(adminCustomFields > 0) await cur_db.dropCollection('adminCustomFields') 
+
+        let adminMenus = await cur_db.collection('adminMenus').estimatedDocumentCount();
+        if(adminMenus > 0) await cur_db.dropCollection('adminMenus')
+        
+        let adminSettings = await cur_db.collection('adminSettings').estimatedDocumentCount();
+        if(adminSettings > 0) await cur_db.dropCollection('adminSettings')
+
+        console.log('\x1b[34m[RESET]\x1b[0m','Admin tool reset success, please restart server !')
+        process.exit(1);
+    }catch(e){
+        //console.log('Admin reset error: ',e.message);
+        console.log('\x1b[31m[ERROR]\x1b[0m',e.message)
+        process.exit(1);
+    }
+}

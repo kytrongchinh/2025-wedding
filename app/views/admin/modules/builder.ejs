@@ -1,0 +1,123 @@
+<%- include('../../layout/admin/_head') -%>
+<!-- Content Header (Page header) -->
+<section class="content-header form-inline">
+    <h1>Builder <%=mod_alias%><small><a href="<%=mod_url%>"><i class="fa fa-reply"></i></a></small></h1>
+    <ol class="breadcrumb">
+        <li><a href="<%= _adminUrl%>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active"><%=mod_alias%></li>
+    </ol>
+</section>
+
+<section class="content-header">
+    <div class="right pull-right">
+        <button type="button" id="update-module-db" class="btn btn-primary">Reset Module DB</button>
+    </div>
+    <div class="clearfix"></div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <% if (typeof(valid_errors) != 'undefined' && valid_errors.length > 0) { %>
+    <section class="content-header">
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <% valid_errors.forEach(function(error){ %>
+            <p><i class="icon fa fa-warning"></i> <%= error%> </p>
+            <% }); %>
+        </div>
+    </section>
+    <% } %>
+    
+    
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="box">
+                    <form class="form-horizontal" id="FormAdd" method="post">
+                        <div class="box-body table-responsive">
+                            <table class="table table-striped table-bordered table-hover dataTable">
+                                <tbody>
+                                    <tr>
+                                        <td><label for="">Module *</label></td>
+                                        <td>
+                                            <div class="form-inline">
+                                                <% if(modules_list.length > 0){ %>
+                                                    <select name="module" class="form-control small" onchange="Admin.module.switch_module(this);">
+                                                        <option value=""></option>
+                                                        <% modules_list.forEach(function(item){%>
+                                                        <option value="<%=item.name%>"><%=item.name%></option>
+                                                        <%}); %>
+                                                        <option value="0">New module</option>
+                                                    </select>
+                                                    <input style="display: none;margin-top: 5px" type="text" class="form-control medium" name="module_new" placeholder="module name" />
+                                                <% }else{ %>
+                                                    <input type="text" class="form-control medium" value="<%=helpers.admin.get_query_data(post_data,'module')%>" name="module"/>
+                                                <% } %>
+                                                <span>[a-z_0-9]</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="">Resource (route) *</label></td>
+                                        <td>
+                                            <input style="display: inline" type="text" class="form-control medium" value="<%=helpers.admin.get_query_data(post_data,'resource')%>" id="resource" name="resource"/>
+                                            <span>[a-z_0-9]</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="">Collection name *</label></td>
+                                        <td>
+                                            <input style="display: inline" type="text" class="form-control medium" value="<%=helpers.admin.get_query_data(post_data,'collection')%>" id="collection" name="collection"/>
+                                            <span>[A-Za-z_0-9]</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="">Schema (fields)*</label></td>
+                                        <td>
+                                            <input style="display: inline" type="text" class="form-control medium" value="<%=helpers.admin.get_query_data(post_data,'schema')%>" id="schema" name="schema"/>
+                                            <span> separated by ','</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <button type="submit" class="btn btn-primary">Builder Module</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    
+</section>
+</div><!--/.content-wrapper-->
+
+<script>
+    $(document).ready(() => {
+        $('#update-module-db').on('click',function(el){
+            $.ajax({
+                url: `<%=mod_url%>/reset_module`,
+                type: 'POST',
+                data:{
+                    _csrf : token_value,
+                    update : 1
+                },
+                success: function(res) {
+                    if(res && res.status == 1){
+                        Admin.confirm('Reset module success, need restart app','',() => {
+                            window.location.reload();
+                        });
+                    }
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+        })
+    })
+</script>
+
+<%- include('../../layout/admin/_footer') -%>
+<%- include('../../layout/admin/_end') -%>

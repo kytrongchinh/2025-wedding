@@ -1,0 +1,16 @@
+version: "3"
+services:
+    app:
+        container_name: 2025-cp-bud-utc-summer
+        image: 2025-cp-bud-utc-summer
+        volumes:
+            - ./app:/srv/app
+            - ./bin:/srv/bin
+            - ./media:/srv/media
+            - ./public:/srv/public
+            - ./app.js:/srv/app.js
+        restart: "no"
+        build:
+            dockerfile: Dockerfile.dev
+        ports:
+            - "3005:3005"

@@ -1,0 +1,32 @@
+<% if (typeof(msg_success) != 'undefined' && msg_success.length > 0) { %>
+    <% msg_success.forEach(function(success){ %>
+    <section class="content-header">
+        <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <p><i class="icon fa fa-check"></i> <%= success%></p>
+        </div>
+    </section>
+    <% }); %>
+<% } %>
+
+<% if (typeof(msg_warning) != 'undefined' && msg_warning.length > 0) { %>
+    <% msg_warning.forEach(function(warning){ %>
+    <section class="content-header">
+        <div class="alert alert-warning alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <p><i class="icon fa fa-"></i> <%= warning%></p>
+        </div>
+    </section>
+    <% }); %>
+<% } %>
+
+<% if (typeof(msg_error) != 'undefined' && msg_error.length > 0) { %>
+    <% msg_error.forEach(function(error){ %>
+    <section class="content-header">
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <p><i class="icon fa fa-ban"></i> <%= error%> </p>
+        </div>
+    </section>
+    <%});%>
+<% } %>

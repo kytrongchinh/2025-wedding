@@ -1,0 +1,88 @@
+<%- include('../../layout/admin/_head') -%>
+<!-- Content Header (Page header) -->
+<section class="content-header form-inline">
+    <h1>Edit <%= mod_alias%><small><a href="<%= mod_url%>"><i class="fa fa-reply"></i></a></small></h1>
+    <ol class="breadcrumb">
+        <li><a href="<%= mod_url%>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active"><%=title%></li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <% if (typeof(valid_errors) != 'undefined' && valid_errors.length > 0) { %>
+    <section class="content-header">
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <% valid_errors.forEach(function(error){ %>
+            <p><i class="icon fa fa-warning"></i> <%= error%> </p>
+            <% }); %>
+        </div>
+    </section>
+    <% } %>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box">
+                <form id="FormAdd" method="post">
+                    <div class="box-body table-responsive">
+                        <input type="hidden" class="form-control small" name="_id" value="<%= data_edit._id%>"/>
+                        <table class="table table-striped table-bordered table-hover dataTable">
+                            <tbody>
+                            <tr>
+                                <td style="width: 200px"><label>Role</label></td>
+                                <td>
+                                    <select class="form-control medium" name="role" disabled>
+                                        <option><%=helpers.admin.get_query_data(data_edit,'role')%></option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Module</label></td>
+                                <td>
+                                    <select class="form-control medium" name="module" disabled>
+                                        <option><%=helpers.admin.get_query_data(data_edit,'module')%></option>
+                                    </select>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><label>Resource</label></td>
+                                <td>
+                                    <select class="form-control medium" name="resource" disabled>
+                                        <option><%=helpers.admin.get_query_data(data_edit,'resource')%></option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Custom fields</label></td>
+                                <td>
+                                    <div class="form-group form-inline" id="custom_fields">
+                                    <% for(let i = 0; i<field_keys.length; i++){ %>
+                                        <div class="checkbox ui-state-default">
+                                            <input <%if(data_edit.custom_fields.indexOf(field_keys[i]) != -1){%>checked<%}%> id="checkbox_<%=i%>" class="styled" type="checkbox" name="custom_fields" value="<%=field_keys[i]%>">
+                                            <label for="checkbox_<%=i%>"><%=field_keys[i]%></label>
+                                        </div>
+                                    <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><button type="submit" class="btn btn-primary">Edit <%=mod_alias%></button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+    $(function(){
+        $("#custom_fields").sortable({placeholder: "ui-state-highlight"});
+    });
+</script>
+</div><!--/.content-wrapper-->
+<%- include('../../layout/admin/_footer') -%>
+<%- include('../../layout/admin/_end') -%>

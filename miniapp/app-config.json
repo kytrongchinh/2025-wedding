@@ -1,0 +1,16 @@
+{
+	"app": {
+		"title": "mini-2025",
+		"headerColor": "#1843EF",
+		"textColor": "white",
+		"leftButton": "none",
+		"statusBar": "normal",
+		"actionBarHidden": true,
+		"hideAndroidBottomNavigationBar": true,
+		"hideIOSSafeAreaBottom": true
+	},
+	"listCSS": [],
+	"listSyncJS": [],
+	"listAsyncJS": [],
+	"pages": []
+}

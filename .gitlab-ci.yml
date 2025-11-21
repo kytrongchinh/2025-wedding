@@ -1,0 +1,53 @@
+## Templates ##
+include:
+    - remote: "https://nexus-fpt.zsl.zalo.services/repository/shared/so/gitlab-ci-templates/node/k8s-node.yml"
+
+## Global variales ##
+variables:
+    IMAGE_TAG_PREFIX: zsl-campaign
+    SERVICE_NAME: 2025-cp-bud-utc-summer
+default:
+    tags:
+        - zsl-k8s
+
+## Build jobs ##
+build:
+    extends: .build-node-image-template
+    variables:
+        #SERVICE_FOLDER: service
+        NPM_PRIVATE_REPO_ENABLE: "yes"
+        NPM_PRIVATE_REPO_NAME: zsl-npm-group
+        NPM_PRIVATE_REPO_USER: zsl_ci_user
+
+#### Deploy Jobs ####
+#
+deploy:staging:
+    extends: .deploy-to-k8s-template
+    variables:
+        K8S_CLUSTER_NAME: zsl-app
+        K8S_NAMESPACE: campaign-stg
+        ENVIRONMENT: staging
+        SERVICE_PORT: 3000
+        INGRESS: "yes"
+        #SERVICE_IS_CRONJOB: "no"
+        #SERVICE_CRONJOB_SCHEDULE: "*/5 * * * *"
+    #only:
+    #  refs:
+    #    - staging
+    when: manual
+#
+deploy:prod:
+    extends: .deploy-to-k8s-template
+    variables:
+        K8S_CLUSTER_NAME: zsl-app
+        K8S_NAMESPACE: campaign
+        ENVIRONMENT: production
+        SERVICE_PORT: 3000
+        INGRESS: "yes"
+        #SERVICE_IS_CRONJOB: "no"
+        #SERVICE_CRONJOB_SCHEDULE: "*/5 * * * *"
+    only:
+        refs:
+            - master
+            - main
+    when: manual

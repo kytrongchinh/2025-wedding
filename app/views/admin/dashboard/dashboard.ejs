@@ -1,0 +1,71 @@
+<%- include('../../layout/admin/_head') -%>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Dashboard
+        <small>Control panel</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Dashboard</li>
+    </ol>
+</section>
+
+<%
+var arr_color = ['aqua','green','blue','olive','teal','purple'];
+var bg_color = arr_color[Math.floor(Math.random()*arr_color.length)];
+%>
+
+
+<!-- Main content -->
+<section class="content" style="min-height: 800px">
+    <div class="row">
+        <% admin_menu.forEach(function(menu){ %>
+        <% if(menu){ %>
+        <% if(menu.childs.length > 0){ %>
+        <% menu.childs.forEach(function(child){ %>
+        <% if(child.is_dashboard == true){ %>
+        <div class="col-lg-3 col-xs-6">
+            <a href="<%=_baseUrl%><%=child.link%>">
+                <div class="small-box bg-<%=bg_color%>">
+                    <div class="inner">
+                        <h4><%=child.name%></h4>
+                        <br>
+                    </div>
+                    <div class="icon">
+                        <i class="fa <%=child.icon%>"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <%}%>
+                    <% }); %>
+        <% } else if(menu.is_dashboard == true){ %>
+        <div class="col-lg-3 col-xs-6">
+            <a href="<%=_baseUrl%><%=menu.link%>">
+                <div class="small-box bg-<%=bg_color%>">
+                    <div class="inner">
+                        <h4><%=menu.name%></h4>
+                        <br>
+                    </div>
+                    <div class="icon">
+                        <i class="fa <%=menu.icon%>"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <% } %>
+        <% } %>
+        <% }); %>
+    </div><!-- /.row -->
+
+
+
+</section>
+
+
+</div>
+<!--/.content-wrapper-->
+<%- include('../../layout/admin/_footer') -%>
+<%- include('../../layout/admin/_end') -%>

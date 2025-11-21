@@ -1,0 +1,53 @@
+{
+	"compilerOptions": {
+		// ******** Cấu hình đầu ra và biên dịch ********
+		"noEmit": true, //Không xuất file .js khi biên dịch. TypeScript chỉ kiểm tra lỗi.
+		"target": "es6", //Biên dịch mã TypeScript thành chuẩn ECMAScript 6 (ES6).
+		"module": "esnext", //Sử dụng hệ thống module mới nhất (ESNext).
+		"moduleResolution": "node", //Dùng cơ chế Node.js module resolution để tìm file .ts hoặc .js.
+		"noEmitOnError": true, //Nếu có lỗi, TypeScript không xuất file.
+
+		// ******** Kiểm tra kiểu dữ liệu và lỗi ********
+		"noImplicitAny": false, //Không yêu cầu phải khai báo kiểu dữ liệu cho mọi biến (có thể dùng any).
+		"strict": true, //Bật chế độ Strict Mode (giúp kiểm tra kiểu chặt chẽ hơn).
+		"noImplicitReturns": true, //Bắt buộc hàm nào cũng phải có giá trị trả về rõ ràng.
+		"noImplicitThis": true, //Không cho phép this bị suy luận thành any.
+		"forceConsistentCasingInFileNames": true, //Bắt buộc phải phân biệt chữ hoa/chữ thường trong tên file.
+		"noFallthroughCasesInSwitch": true, //Không cho phép bỏ sót case trong switch.
+
+		// ******** Cấu hình JSX & React ********
+		"jsx": "react", //Dùng JSX theo chuẩn React.
+
+		// ******** Cấu hình thư viện (Library) ********
+		"lib": ["dom", "es5", "es6", "es7", "es2017"], //Hỗ trợ các API của trình duyệt (DOM) và các phiên bản JavaScript (ES5, ES6, ...).
+		"types": ["vite/client"], //Import các type definition cho vite/client.
+
+		// ******** Cấu hình Import & Module ********
+		"allowSyntheticDefaultImports": true, //Cho phép import mặc định mà không cần export default.
+		"esModuleInterop": true, //Hỗ trợ import module CommonJS như require().
+		"resolveJsonModule": true, //Cho phép import file .json.
+
+		// ******** Cấu hình Decorator & Metadata ********
+		"experimentalDecorators": true, //Hỗ trợ decorator (@Decorator) trong TypeScript.
+		"emitDecoratorMetadata": true, //Xuất metadata khi sử dụng decorator (hữu ích khi dùng với NestJS).
+
+		// ******** Cấu hình Performance & Debug ********
+		"skipLibCheck": true, //Bỏ qua kiểm tra lỗi trong các file thư viện (tăng tốc biên dịch).
+		"removeComments": true, //Xóa comment trong file .js sau khi biên dịch.
+		"sourceMap": true, //Tạo file .map để hỗ trợ debug trong trình duyệt.
+		// ******** Cấu hình Alias (Định danh đường dẫn) ********
+		"baseUrl": "src", //Định nghĩa thư mục gốc là src.
+		"paths": {
+			"@/*": ["*"] //Cho phép sử dụng @/components/... thay vì ../../components/....
+		},
+		// ******** Cấu hình TypeScript ********
+		"preserveConstEnums": true, // Giữ nguyên const enum trong file TypeScript sau khi biên dịch.
+		"allowJs": true, //Cho phép TypeScript biên dịch file .js cùng với file .ts.
+		"declaration": false, //Nếu true, TypeScript sẽ tạo file .d.ts (chứa định nghĩa kiểu) khi biên dịch.
+		"noUnusedLocals": false, // Nếu true, TypeScript báo lỗi khi có biến cục bộ không được sử dụng.
+		"strictFunctionTypes": false, //Nếu true, TypeScript kiểm tra kiểu hàm chặt chẽ hơn khi gán biến.
+		"pretty": true //Hiển thị lỗi TypeScript theo định dạng dễ đọc hơn.
+	},
+	"exclude": ["node_modules"],
+	"include": ["src"]
+}

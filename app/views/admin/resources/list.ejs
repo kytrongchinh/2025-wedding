@@ -1,0 +1,121 @@
+<%- include('../../layout/admin/_head') -%>
+
+<!-- Content Header (Page header) -->
+<section class="content-header form-inline">
+    <h1>List <%= mod_alias%><small><a href="<%=mod_url%>/"><i class="fa fa-refresh"></i></a></small>
+    </h1>
+    <ol class="breadcrumb pull-right">
+        <li><a href="<%= _adminUrl%>"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active"><%= mod_alias%></li>
+    </ol>
+</section>
+<div class="clearfix"></div>
+
+<section class="content-header">
+    <form class="form-inline">
+        <div class="form-group">
+            Module
+            <select class="form-control" name="module" onchange="$(this).closest('form').submit();">
+                <option value=""></option>
+                <% for(let i = 0; i<modules_list.length; i++){ %>
+                <option <% if(helpers.admin.get_query_data(query_get,'module') == modules_list[i].name){ %>selected<% } %>  value="<%=modules_list[i].name%>"><%=modules_list[i].name%></option>
+                <% } %>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="Admin.filter_submit();">Filter</button>
+        <div class="right pull-right">
+
+            <%- helpers.admin.render_menu_buttons(mod_module,mod_resource,admin_userdata)%>
+
+        </div>
+    </form>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <form action="<%=mod_url%>/delete" class="JsDeleteForm" method="post">
+                    <div class="box-header">
+                        <h3 class="box-title">Total: <%= total_record%> records</h3>
+                    </div>
+
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <% if(helpers.admin.checkPerm('delete',admin_userdata)){ %>
+                                <th class="col_checkbox">
+                                    <div class="checkbox">
+                                        <input id="checkbox_all" class="styled" type="checkbox">
+                                        <label for="checkbox_all"></label>
+                                    </div>
+                                </th>
+                                <%}%>
+                                <% Object.keys(fields).forEach(function(field){ %>
+                                <% let field_type = fields[field]; %>
+                                <th class="sorting">
+                                    <a class="sort"><%= field%></a>
+                                    <div class="filter_sort">
+                                        <a href="javascript:void(0);" data-filter="filter_<%= field%>" data-toggle="hide" class="filter"><i class="fa fa-filter"></i></a>
+                                    </div>
+                                    <br>
+                                    <div class="wrapper_filter">
+                                        <% if(field_type == 'Boolean'){ %>
+                                        <select onchange="Admin.filter_submit();" class="form-control filter_field hide filter_<%= field%>" name="<%= field%>">
+                                            <option value=""></option>
+                                            <option <% if(helpers.admin.get_query_data(query_get,field) == 'true'){%> selected <%}%> value="true">Active</option>
+                                            <option <% if(helpers.admin.get_query_data(query_get,field) == 'false'){%> selected <%}%> value="false">Disable</option>
+                                        </select>
+                                        <% }else{ %>
+                                        <input class="filter_field hide filter_<%= field%> <% if (field_type == 'Date') { %>datepicker<%}%>" name="<%= field%>" type="text" value="<%=helpers.admin.get_query_data(query_get,field)%>">
+                                        <% } %>
+                                    </div>
+                                </th>
+                                <% }); %>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <% if (lists.length > 0) { %>
+                            <% lists.forEach(function(row) { %>
+                            <tr>
+                                <% if(helpers.admin.checkPerm('delete',admin_userdata)){ %>
+                                <td class="col_checkbox">
+                                    <div class="checkbox">
+                                        <input id="checkbox<%= row._id%>" class="styled" type="checkbox" name="listViewId" value="<%= row._id%>">
+                                        <label for="checkbox<%= row._id%>"></label>
+                                    </div>
+                                </td>
+                                <%}%>
+                                <% Object.keys(fields).forEach(function(field){ %>
+                                <td>
+                                    <%= helpers.admin.get_field_value(field,row[field],fields[field])%>
+                                </td>
+                                <% }); %>
+
+                                <td>
+                                    <%- helpers.admin.render_action_buttons(row._id,mod_route,admin_userdata)%>
+                                </td>
+                            </tr>
+                            <% }); %>
+                            <% } else { %>
+                            <tr>
+                                <td colspan="<%=  Object.keys(fields).length + 10 %>">No data.</td>
+                            </tr>
+                            <% } %>
+                            </tbody>
+                        </table>
+                        <ul class="pagination pull-left">
+                            <%- output_paging%>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+</div><!--/.content-wrapper-->
+<%- include('../../layout/admin/_footer') -%>
+<%- include('../../layout/admin/_end') -%>

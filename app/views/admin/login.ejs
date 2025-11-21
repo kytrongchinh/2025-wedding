@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title><%= title%></title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="<%=publicUrl%>ico/adtima.ico" />
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/bootstrap/font-awesome-4.6.3.css">
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/AdminLTE.css">
+    <script src="<%=publicUrl%>admin/js/jQuery-2.1.4.min.js"></script>
+    <script src="<%=publicUrl%>admin/js/bootstrap.min.js"></script>
+    <script src="<%=publicUrl%>admin/js/sweetalert-2.11.min.js"></script>
+    <style>
+        .swal2-close-custom:focus, .swal2-input:focus{
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+<body class="hold-transition">
+    <div class="login-box">
+        <div class="login-logo">
+            <b>Login</b>
+        </div>
+        <!-- /.login-logo -->
+        <div class="login-box-body">
+            <form>
+                <div class="form-group input-group">
+                    <span class="input-group-addon" id="sizing-addon2"><i class="fa fa-user" aria-hidden="true"></i></span>
+                    <input type="text" class="form-control" required placeholder="username" id="username" value="<%=helpers.admin.get_query_data(post_data,'username')%>" autocomplete="off" >
+                </div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon" id="sizing-addon2"><i class="fa fa-key" aria-hidden="true"></i></span>
+                    <input type="password" class="form-control" required placeholder="password" id="password" autocomplete="off">
+                </div>
+
+                <% if(['dev','develop'].includes(appConfig.env) !== true){%>
+                <div class="form-group input-group">
+                    <div class="g-recaptcha" data-sitekey="<%=appConfig.recaptcha.site_key%>"></div>
+                    <script src='https://www.google.com/recaptcha/api.js'></script>
+                </div>
+                <%}%>
+                <div class="row">
+                    <div class="col-xs-4">
+                        <button type="button" id="login" class="btn btn-primary btn-block btn-flat">Login</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        const base_url = '<%= _baseUrl %>';
+        const _csrf = '<%= csrftoken %>';
+        $(document).ready(() => {
+            $('#login').bind('click', async () => {
+                const username = $('#username').val()
+                const password = $('#password').val()
+                const grecaptcha = $('#g-recaptcha-response').val()
+                $.ajax({
+                    url: `${base_url}<%=appConfig.adminRouter%>/login`,
+                    type: 'POST',
+                    data: {username,password,_csrf,grecaptcha},
+                    success: function(res) {
+                        try{
+                            if(!res) throw new Error(`An error occurred, please try again later`)
+                            if(res.error === 0){
+                                Swal.fire({
+                                    icon: (res.data.is2FAEnabled === false) ? 'warning' : 'success',
+                                    title : (res.data.is2FAEnabled === false) ? 'Tài khoản của bạn <strong>chưa cài đặt xác thực 2 lớp</strong>!' : 'Nhập mã xác thực.',
+                                    input: 'text',
+                                    inputAttributes: {
+                                        autocapitalize: 'off',
+                                        minLength:6,
+                                        maxLength:6
+                                    },
+                                    inputPlaceholder: 'Nhập mã xác thực.',
+                                    inputValidator : (value) =>{
+                                        if (!value) {
+                                            return 'Value is required'
+                                        }
+                                        let valid = /^[0-9]{6}$/.test(value)
+                                        if(!valid){
+                                            return 'Invalid'    
+                                        }
+                                    },
+                                    html: (res.data.QRCodeImage) ? `<img style="width:200px" src="${res.data.QRCodeImage}" alt="qr-code-img" />` : '',
+                                    footer: (res.data.is2FAEnabled === false) ? 'Nếu đã cài đặt, vui lòng nhập mã xác thực để tiếp tục' : '',
+                                    showConfirmButton: true,
+                                    confirmButtonText : 'Xác thực',
+                                    allowOutsideClick:false,
+                                    showCloseButton: true,
+                                    customClass :{
+                                        closeButton : 'swal2-close-custom'
+                                    }
+                                }).then((result) => {
+                                    if(result.isConfirmed){
+                                        const otpToken = result.value.trim()
+                                        verifyOTP(otpToken,res.data.secretVerify2fa)
+                                    }else{
+                                        window.location.reload()
+                                    }
+                                })
+                            }else if(res.error === 1){
+                                throw new Error(`${res.msg}`)
+                            }else {
+                                window.location.reload()
+                            }
+                        }catch(e){
+                            Swal.fire({
+                                icon: 'error',
+                                title: `${e.message}`,
+                                html: ``,
+                                footer: '',
+                                showConfirmButton: true,
+                                showCloseButton: true
+                            }).then(()=>{
+                                window.location.reload()
+                            })
+                        }
+                    },
+                    error: function(e) {
+                        console.log('error',e);
+                        Swal.fire({
+                            icon: 'error',
+                            title: `${e.responseText}`,
+                            html: ``,
+                            footer: '',
+                            showConfirmButton: true,
+                            showCloseButton: true
+                        }).then(()=>{
+                            window.location.reload()
+                        })
+                    }
+                });
+            })
+            const verifyOTP = (otpToken, secretVerify2fa) => {
+                const username = $('#username').val()
+                const password = $('#password').val()
+                $.ajax({
+                    url: `${base_url}<%=appConfig.adminRouter%>/verify-2fa`,
+                    type: 'POST',
+                    data: {username,password,_csrf,otpToken,secretVerify2fa},
+                    success: function(res) {
+                        try {
+                            if(!res) throw new Error(`An error occurred, please try again later`)
+                            if(res.error === 0){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đăng nhập thành công',
+                                    allowOutsideClick:false,
+                                    timer: 3000,
+                                }).then((result)=>{
+                                    window.location.reload()
+                                })
+                            }else{
+                                throw new Error(`${res.msg}`)
+                            }
+                        }catch(e){
+                            Swal.fire({
+                                icon: 'error',
+                                title: `${e.message}`,
+                                html: ``,
+                                footer: '',
+                                showConfirmButton: true,
+                                confirmButtonText : 'Thử lại',
+                                showCloseButton: true
+                            }).then(()=>{
+                                window.location.reload()
+                            })
+                        }
+                    },
+                    error: function(e) {
+                        console.log(e);
+                        Swal.fire({
+                            icon: 'error',
+                            title: `${e.responseText}`,
+                            html: ``,
+                            footer: '',
+                            showConfirmButton: true,
+                            showCloseButton: true
+                        }).then(()=>{
+                            window.location.reload()
+                        })
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+</html>

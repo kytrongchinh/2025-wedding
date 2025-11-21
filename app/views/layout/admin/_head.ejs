@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title%></title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="robots" content="index, follow" />
+    <meta name="revisit-after" content="7 days" />
+    <meta name="author" content="Adtima" />
+    <meta name="copyright" content="2018 Adtima" />
+    <meta property="og:title" content="" />
+    <meta property="og:description" content="" />
+    <meta property="og:image" content=""/>
+
+    <link rel="shortcut icon" href="<%=faviconUrl%>" />
+
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/bootstrap/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/bootstrap/font-awesome-4.6.3.css">
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/AdminLTE.css">
+
+    <!-- AdminLTE Skins -->
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/skins/_all-skins.min.css">
+
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/datetimepicker/datetimepicker.css">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/jquery.alerts.css">
+
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/datepicker3.css">
+
+    <!-- Custom style -->
+    <link rel="stylesheet" href="<%=publicUrl%>admin/css/style.css?v=<%=_versionCache%>">
+    
+    <link href="<%=publicUrl%>admin/css/select2.min.css?v=<%=_versionCache%>" rel="stylesheet" type="text/css">
+    <!-- jQuery 2.1.4 -->
+    <script src="<%=publicUrl%>admin/js/jQuery-2.1.4.min.js"></script>
+    <script src="<%=publicUrl%>admin/js/jquery-ui.min.js"></script>
+    <script src="<%=publicUrl%>admin/js/select2.min.js?v=<%=_versionCache%>" type="text/javascript"></script>
+    <script>
+        var token_value = '<%= csrftoken %>';
+        var base_url = '<%= _baseUrl %>';
+        var adminUrl = '<%= adminUrl %>';
+    </script>
+</head>
+<body class="hold-transition skin-blue <% if(menu_layout == 'top'){%>layout-top-nav<%}else{%> sidebar-mini sidebar-collapse <%}%>">
+    <div class="wrapper">
+        <%- include('./_header') -%>
+        <div class="content-wrapper">
+        <%- include('./_message') -%>
+        

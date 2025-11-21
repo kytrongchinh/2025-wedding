@@ -1,0 +1,61 @@
+<% if(menu_layout == 'top') { %>
+    <%- include('./_menu_top') -%>
+<% }else{ %>
+    <%- include('./_menu_left') -%>
+<% } %>
+
+<aside class="control-sidebar control-sidebar-dark control-sidebar">
+    <div class="tab-content">
+        <div class="tab-pane active" id="control-sidebar-settings-tab">
+            <div class="form-group">
+                <label class="control-sidebar-subheading">
+                    Menu
+                    <select name="zsl_menu" class="form-control">
+                        <option <% if(menu_layout=='left'){%>selected<%}%> value="left">Left</option>
+                        <option <% if(menu_layout=='top'){%>selected<%}%> value="top">Top</option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="control-sidebar-subheading">
+                    <%=translate('Language')%>
+                    <select name="zsl_language" class="form-control">
+                        <option <% if(language=='en_US'){%>selected<%}%> value="en_US"><%=translate('English')%></option>
+                        <option <% if(language=='vi_VN'){%>selected<%}%> value="vi_VN"><%=translate('Vietnamese')%></option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-info btn-flat" id="apply-settings">Apply</button>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#apply-settings').on('click',function(){
+            let zsl_menu = $j('select[name="zsl_menu"]').val();
+            let zsl_language = $j('select[name="zsl_language"]').val();
+            $.ajax({
+                type: 'POST',
+                url :  `${base_url}api/apply_setting`,
+                data : {
+                    zsl_menu,
+                    zsl_language,
+                    _csrf  : token_value
+                },
+                success: function(res){
+                    if(res.status == 1){
+                        window.location.reload();
+                    }else{
+                        $j.alertable.alert(res.data);
+                    }
+                },
+                error : function(e){
+                    $j.alertable.alert('Có lỗi xảy ra vui lòng thử lại.');
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,216 @@
+<%- include('../../layout/admin/_head') -%>
+<!-- Content Header (Page header) -->
+<div class="clearfix"></div>
+<section class="content-header form-inline">
+    <h1>List key cache redis<small><a href="<%= mod_url%>"><i class="fa fa-reply"></i></a></small>
+    </h1>
+    <ol class="breadcrumb pull-right">
+        <li><a href="<%= mod_url%>"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Cache redis</li>
+    </ol>
+</section>
+<section class="content">
+    <div class="box">
+        <div class="box-header">
+            <div class="right pull-left form-inline">
+                <a role="button" class="set-key">
+                    <button type="button" class="btn btn-primary">Set</button>
+                </a>
+                <input class="form-control" name="redis-key" placeholder="key">
+                <input class="form-control" style="width:500px" name="redis-value" placeholder="value">
+                <input class="form-control" style="width:80px" name="redis-expire" placeholder="expire" value="3600">
+            </div>
+        </div>
+        
+        <!-- /.box-header -->
+        <div class="box-body table-responsive no-padding">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Key</th>
+                        <th>Value</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(list_keys && list_keys.length > 0){%>
+                    <% list_keys.forEach((key, i) =>{%>
+                    <tr>
+                        <td><%=i%></td>
+                        <td><%=key%></td>
+                        <td><a role="button" class="get-key" data-key="<%=key%>" ><span class="label label-success">Get Value</span></a></td>
+                        <td><a role="button" class="del-key" data-key="<%=key%>" ><span class="label label-danger">Remove Cache</span></a></td>
+                    </tr>
+                    <% })%>
+                    <% }%>
+                </tbody>
+            </table>
+        </div>
+        <!-- /.box-body -->
+    </div>
+</section>
+<script src="<%=_staticUrl%>public/admin/js/sweetalert-2.1.2.min.js"></script>
+<script>
+    let mod_url = "<%= mod_url%>"
+    $(document).ready(() => {
+        $('.set-key').on('click',function(e){
+            e.preventDefault();
+
+            let key = $('input[name="redis-key"]').val();
+            let value = $('input[name="redis-value"]').val();
+            let expire = parseInt($('input[name="redis-expire"]').val());
+            if(!key || !value || !expire){
+                swal({
+                    title: 'Nhập key,value, expire time',
+                    icon: "warning"
+                });
+                return;
+            }
+
+            swal({
+                title: `Set key : ${key}`,
+                text: `Value : ${value}`,
+                icon: "warning",
+                content: {
+                    element: "div",
+                    attributes: {
+                        innerText: `Expire time: ${expire} seconds`
+                    }
+                },
+                buttons: true,
+                // dangerMode: true,
+            }).then((approve) => {
+                if (approve) {
+                    setRedisValue(key,value,expire);
+                }   
+            });
+        });
+
+        $('a.get-key').on('click',function(e){
+            e.preventDefault();
+            getRedisValue($(this).data('key'));
+        })
+
+        $('a.del-key').on('click',function(e){
+            e.preventDefault();
+            let key = $(this).data('key');
+            swal({
+                title: "Are you sure to Remove ?",
+                text: `Key : ${key}`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((approve) => {
+                if (approve) {
+                    delRedisKey(key);
+                }   
+            });
+            
+        })
+    });
+    function getRedisValue(key){
+        let data_post = {
+            key : key,
+            _csrf : token_value
+        }
+        $.ajax({
+            type: 'POST',
+            url: `${mod_url}/get-key`,
+            data: data_post,
+            dataType: 'json',
+            success: function (res) {
+                if (res && res.error == 0) {
+                    swal({
+                        title: `${key}`,
+                        text: `${res.msg}`,
+                        icon: "success",
+                        content: {
+                            element: "div",
+                            attributes: {
+                                innerText: `Expire time: ${res.remainTime} seconds`
+                            }
+                        }
+                    })
+                    disable_post= false;
+                } else {
+                    swal(res.msg, {
+                        icon: "error",
+                    });
+                }
+            },
+            fail: function (e) {
+                console.log(e);
+                swal("Error happen!! Please reload", {icon: "error"});
+            },
+        });
+    }
+
+    function delRedisKey(key){
+        let data_post = {
+            key : key,
+            _csrf : token_value
+        }
+        $.ajax({
+            type: 'POST',
+            url: `${mod_url}/del-key`,
+            data: data_post,
+            dataType: 'json',
+            success: function (res) {
+                if (res && res.error == 0) {
+                    swal({
+                        title: `${key}`,
+                        text: `Del: ${res.msg}`,
+                        icon: "success"
+                    })
+                    disable_post= false;
+                } else {
+                    swal(res.msg, {
+                        icon: "error",
+                    });
+                }
+            },
+            fail: function (e) {
+                console.log(e);
+                swal("Error happen!! Please reload", {icon: "error"});
+            },
+        });
+    }
+
+    function setRedisValue(key,value,expire){
+        let dataPost = {
+            key : key,
+            value: value,
+            expire : expire || 3600,
+            _csrf : token_value
+        }
+        console.log('dataPost',dataPost);
+        $.ajax({
+            type: 'POST',
+            url: `${mod_url}/set-key`,
+            data: dataPost,
+            dataType: 'json',
+            success: function (res) {
+                if (res && res.error == 0) {
+                    swal({
+                        title: `${key}`,
+                        text: `Set: ${res.msg}`,
+                        icon: "success"
+                    })
+                    disable_post= false;
+                } else {
+                    swal(res.msg, {
+                        icon: "error",
+                    });
+                }
+            },
+            fail: function (e) {
+                console.log(e);
+                swal("Error happen!! Please reload", {icon: "error"});
+            },
+        });
+    }
+</script>
+</div><!--/.content-wrapper-->
+<%- include('../../layout/admin/_footer') -%>
+<%- include('../../layout/admin/_end') -%>

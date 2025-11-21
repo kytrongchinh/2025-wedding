@@ -1,0 +1,9 @@
+.git
+.gitignore
+.gitlab-ci.yml
+docker-compose.yml
+Dockerfile
+LICENSE
+VERSION
+README.md
+/node_modules
