@@ -17,7 +17,7 @@
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.20.1",
 		"bull": "^4.10.4",
-		"canvas": "^2.11.2",
+		"canvas": "*",
 		"connect-mongo": "^5.0.0",
 		"connect-redis": "^7.1.0",
 		"cookie-parser": "^1.4.5",
@@ -42,7 +42,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"mobile-detect": "^1.4.5",
 		"moment": "^2.24.0",
-		"mongodb-client-encryption": "^6.1.0",
+		"mongodb-client-encryption": "*",
 		"mongoose": "^7.3.1",
 		"mongoose-encrypt-plugin": "^1.0.6",
 		"or": "^0.2.0",
@@ -53,7 +53,6 @@
 		"sharp": "0.32.1",
 		"slugify": "^1.4.5",
 		"stream": "^0.0.2",
-		"strong-soap": "^4.0.5",
 		"xss": "^1.0.14",
 		"zmp-openapi-nodejs": "^2.1.6"
 	}
