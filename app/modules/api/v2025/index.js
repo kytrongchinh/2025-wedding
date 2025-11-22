@@ -13,8 +13,12 @@ v2025.use(helmet(appConfig.helmet));
 /**
  *  The user information
  */
-// v2025.use("/info", require("./info/index"));
-// v2025.use("/mini", require("./mini/index"));
+v2025.use("/info", require("./info/index"));
+v2025.use("/mini", require("./mini/index"));
+v2025.use("/album", require("./album/index"));
+v2025.use("/photo", require("./photo/index"));
+v2025.use("/invitee", require("./invitee/index"));
+
 // v2025.use("/user", checkLoginToken, require("./user/index"));
 // v2025.use("/exercise", require("./exercise/index"));
 // v2025.use("/practice", checkLoginToken, require("./practice/index"));

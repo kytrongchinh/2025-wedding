@@ -8,7 +8,7 @@ const objSchema = new Schema(
 		phone: String,
 		title: String,
 		link: String,
-		accept: String,
+		accept: { type: Boolean, default: false },
 		from: String,
 		status: { type: Number, default: 0 },
 		update_by: String,

@@ -1,182 +1,182 @@
-'use strict';
+"use strict";
 
-const express = require('express');
+const express = require("express");
 
-const moduleModel = require('../models');
+const moduleModel = require("../models");
 const mod_config = {
-    module : 'weddings',
-    resource : 'album',
-    collection : 'wd_albums',
-    route : 'weddings/album',
-    view : 'album',
-    alias : 'album'
+	module: "weddings",
+	resource: "album",
+	collection: "wd_albums",
+	route: "weddings/album",
+	view: "album",
+	alias: "album",
 };
 
 const album = express.Router();
-album.get('/', async function(req, res) {
-    const dataView = helpers.admin.get_data_view_admin(req,mod_config);
-    try {
-        let fields = await moduleModel.get_fields(mod_config,'__v',dataView.role);
-        let field_keys = Object.keys(fields);
-        let page = (req.query.page) ? (req.query.page) : 1;
-        let conditions = helpers.admin.filterQuery(req.query, fields);
-        let where = req.query.where;
-        if (where) {
-            let condition_add = helpers.api.get_condition_add(where);
-            conditions = {
-                ...conditions,
-                ...condition_add
-            }
-        }
-        let query_string = helpers.admin.build_query(req.query);
-        let limit = appConfig.grid_limit;
-        let skip = limit * (page - 1);
-        //let sort = { createdAt: -1 };
-        let sort = helpers.admin.sortQuery(req.query);
-        let select = field_keys.join(' ');
-        let query_link = _baseUrl + mod_config.route+ '?' + query_string;
-        let totals = await moduleModel.count(mod_config.collection,conditions);
-        let paginator = helpers.admin.pagination(query_link,page,totals,limit);
+album.get("/", async function (req, res) {
+	const dataView = helpers.admin.get_data_view_admin(req, mod_config);
+	try {
+		let fields = await moduleModel.get_fields(mod_config, "__v", dataView.role);
+		let field_keys = Object.keys(fields);
+		let page = req.query.page ? req.query.page : 1;
+		let conditions = helpers.admin.filterQuery(req.query, fields);
+		let where = req.query.where;
+		if (where) {
+			let condition_add = helpers.api.get_condition_add(where);
+			conditions = {
+				...conditions,
+				...condition_add,
+			};
+		}
+		let query_string = helpers.admin.build_query(req.query);
+		let limit = appConfig.grid_limit;
+		let skip = limit * (page - 1);
+		//let sort = { createdAt: -1 };
+		let sort = helpers.admin.sortQuery(req.query);
+		let select = field_keys.join(" ");
+		let query_link = _baseUrl + mod_config.route + "?" + query_string;
+		let totals = await moduleModel.count(mod_config.collection, conditions);
+		let paginator = helpers.admin.pagination(query_link, page, totals, limit);
 
-        //assign data
-        dataView.lists = [];
-        if(totals > 0){
-            dataView.lists = await moduleModel.find(mod_config.collection,conditions,select,sort,limit,skip);
-        }
+		//assign data
+		dataView.lists = [];
+		if (totals > 0) {
+			dataView.lists = await moduleModel.find(mod_config.collection, conditions, select, sort, limit, skip);
+		}
 
-        //check permission using display button
-        dataView.perms = req.session.admin_userdata.perms;
-        dataView.fields = fields;
-        dataView.field_keys = field_keys;
-        dataView.output_paging = paginator.render();
-        dataView.total_record = totals;
-        dataView.query_get = req.query;
-        dataView.query_string = query_string;
-        dataView.curent_url = req.originalUrl;
-        return res.render('./'+mod_config.module+'/'+mod_config.view+'/list', dataView);
-    } catch (e) {
-        console.log(e);
-        req.flash('msg_error',e.message);
-        return res.redirect(_adminUrl);
-    }
+		//check permission using display button
+		dataView.perms = req.session.admin_userdata.perms;
+		dataView.fields = fields;
+		dataView.field_keys = field_keys;
+		dataView.output_paging = paginator.render();
+		dataView.total_record = totals;
+		dataView.query_get = req.query;
+		dataView.query_string = query_string;
+		dataView.curent_url = req.originalUrl;
+		return res.render("./" + mod_config.module + "/" + mod_config.view + "/list", dataView);
+	} catch (e) {
+		console.log(e);
+		req.flash("msg_error", e.message);
+		return res.redirect(_adminUrl);
+	}
 });
 
 //Get add
-album.get('/add', async function(req, res){
-    try {
-        const dataView = helpers.admin.get_data_view_admin(req,mod_config);
-        let ignore_fields = '__v update_by createdAt updatedAt';
-        dataView.fields = await moduleModel.get_fields(mod_config, ignore_fields);
-        res.render('./'+mod_config.module+'/'+mod_config.view+'/add', dataView);
-    } catch (e) {
+album.get("/add", async function (req, res) {
+	try {
+		const dataView = helpers.admin.get_data_view_admin(req, mod_config);
+		let ignore_fields = "__v update_by createdAt updatedAt";
+		dataView.fields = await moduleModel.get_fields(mod_config, ignore_fields);
+		res.render("./" + mod_config.module + "/" + mod_config.view + "/add", dataView);
+	} catch (e) {
 		console.log(e);
-		req.flash('msg_error',e.message);
-		return helpers.base.redirect(res,mod_config.route);
-    }
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route);
+	}
 });
 
 //Post add
-album.post('/add', async function(req, res){
-    try {
-        let postData = {...req.body}
-        //create
-        let dataAdd = moduleModel.filterData(mod_config.collection,postData);
-        dataAdd.update_by = helpers.admin.get_update_by(req);
+album.post("/add", async function (req, res) {
+	try {
+		let postData = { ...req.body };
+		//create
+		let dataAdd = moduleModel.filterData(mod_config.collection, postData);
+		dataAdd.update_by = helpers.admin.get_update_by(req);
 
-        let create = await moduleModel.create(mod_config.collection, dataAdd, true);
-        if(create.status){
-            req.flash('msg_success','Add success');
-            return helpers.base.redirect(res,mod_config.route);
-        } else {
-            req.flash('msg_error',create.msg);
-            return helpers.base.redirect(res,mod_config.route+'/add');
-        }
-    } catch(e) {
-        req.flash('msg_error',e.message);
-        return helpers.base.redirect(res,mod_config.route+'/add');
-    }
+		let create = await moduleModel.create(mod_config.collection, dataAdd, true);
+		if (create.status) {
+			req.flash("msg_success", "Add success");
+			return helpers.base.redirect(res, mod_config.route);
+		} else {
+			req.flash("msg_error", create.msg);
+			return helpers.base.redirect(res, mod_config.route + "/add");
+		}
+	} catch (e) {
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route + "/add");
+	}
 });
 
 //Get edit
-album.get('/edit/:id', async function (req, res) {
-    try {
-        //validate
-        const validator = new helpers.validate();
-        let valid_error = validator.isObjectId(req.params.id,'ID must be ObjectId').hasErrors();
-        if(valid_error.length > 0){
-            req.flash('msg_error',valid_error[0]);
-            return helpers.base.redirect(res,mod_config.route);
-        }
+album.get("/edit/:id", async function (req, res) {
+	try {
+		//validate
+		const validator = new helpers.validate();
+		let valid_error = validator.isObjectId(req.params.id, "ID must be ObjectId").hasErrors();
+		if (valid_error.length > 0) {
+			req.flash("msg_error", valid_error[0]);
+			return helpers.base.redirect(res, mod_config.route);
+		}
 
-        const dataView = helpers.admin.get_data_view_admin(req,mod_config)
-        const record = await moduleModel.findOne(mod_config.collection,{'_id':req.params.id})
-        if (record) {
-            const ignore_fields = '__v update_by createdAt updatedAt'
-            dataView.fields = await moduleModel.get_fields(mod_config, ignore_fields)
-            dataView.data_edit = dataView.post_data.length > 0 ? dataView.post_data :record
-            return res.render(`./${mod_config.module}/${mod_config.view}/edit`, dataView)
-        }else{
-            req.flash('msg_error', 'Data null');
-            return helpers.base.redirect(res,mod_config.route);
-        }
-    } catch(e) {
-        req.flash('msg_error',e.message);
-        return helpers.base.redirect(res,mod_config.route);
-    }
+		const dataView = helpers.admin.get_data_view_admin(req, mod_config);
+		const record = await moduleModel.findOne(mod_config.collection, { _id: req.params.id });
+		if (record) {
+			const ignore_fields = "__v update_by createdAt updatedAt";
+			dataView.fields = await moduleModel.get_fields(mod_config, ignore_fields);
+			dataView.data_edit = dataView.post_data.length > 0 ? dataView.post_data : record;
+			return res.render(`./${mod_config.module}/${mod_config.view}/edit`, dataView);
+		} else {
+			req.flash("msg_error", "Data null");
+			return helpers.base.redirect(res, mod_config.route);
+		}
+	} catch (e) {
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route);
+	}
 });
 
 //post edit
-album.post('/edit/:id', async function (req, res) {
-    try {
-        let postData = {...req.body};
-        req.flash('post_data',postData);
-        //validate
-        const validator = new helpers.validate();
-        let valid_error = validator.isObjectId(postData._id,'Invalid ID').hasErrors();
-        if(valid_error.length > 0){
-            req.flash('msg_error',valid_error[0]);
-            return helpers.base.redirect(res,mod_config.route);
-        }
+album.post("/edit/:id", async function (req, res) {
+	try {
+		let postData = { ...req.body };
+		req.flash("post_data", postData);
+		//validate
+		const validator = new helpers.validate();
+		let valid_error = validator.isObjectId(postData._id, "Invalid ID").hasErrors();
+		if (valid_error.length > 0) {
+			req.flash("msg_error", valid_error[0]);
+			return helpers.base.redirect(res, mod_config.route);
+		}
 
-        if(postData._id != req.params.id){
-            req.flash('valid_errors','Invalid ID');
-            return helpers.base.redirect(res,mod_config.route);
-        }
+		if (postData._id != req.params.id) {
+			req.flash("valid_errors", "Invalid ID");
+			return helpers.base.redirect(res, mod_config.route);
+		}
 
-        const dataUpdate = moduleModel.filterData(mod_config.collection,postData,'__v _id');
-        dataUpdate.update_by = helpers.admin.get_update_by(req);
-        const resultUpdate = await moduleModel.updateOne(mod_config.collection, {'_id': postData._id}, dataUpdate);
-        if(resultUpdate.status === true){
-            req.flash('msg_success','Edit success.');
-            return helpers.base.redirect(res,mod_config.route);
-        } else {
-            req.flash('msg_error',update.msg);
-            return helpers.base.redirect(res,`${mod_config.route}/edit/${postData._id}`);
-        }
-    } catch(e) {
-        console.log(e);
-        req.flash('msg_error',e.message);
-        return helpers.base.redirect(res,mod_config.route);
-    }
+		const dataUpdate = moduleModel.filterData(mod_config.collection, postData, "__v _id");
+		dataUpdate.update_by = helpers.admin.get_update_by(req);
+		const resultUpdate = await moduleModel.updateOne(mod_config.collection, { _id: postData._id }, dataUpdate);
+		if (resultUpdate.status === true) {
+			req.flash("msg_success", "Edit success.");
+			return helpers.base.redirect(res, mod_config.route);
+		} else {
+			req.flash("msg_error", update.msg);
+			return helpers.base.redirect(res, `${mod_config.route}/edit/${postData._id}`);
+		}
+	} catch (e) {
+		console.log(e);
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route);
+	}
 });
 
 //GET import
-album.get('/import', function(req, res){
-    try {
-        let dataView = helpers.admin.get_data_view_admin(req,mod_config);
-        res.render('./layout/partial/import', dataView);
-    } catch (e) {
-        console.log(e);
-        req.flash('msg_error',e.message);
-        return helpers.base.redirect(res,mod_config.route);
-    }
+album.get("/import", function (req, res) {
+	try {
+		let dataView = helpers.admin.get_data_view_admin(req, mod_config);
+		res.render("./layout/partial/import", dataView);
+	} catch (e) {
+		console.log(e);
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route);
+	}
 });
 
 /** POST import
  *
  */
-album.post('/import', async function(req, res){
-    try {
+album.post("/import", async function (req, res) {
+	try {
 		function convertDataImport(data, type) {
 			switch (type) {
 				case "String":
@@ -263,109 +263,109 @@ album.post('/import', async function(req, res){
 });
 
 //GET export
-album.get('/export', async function(req, res){
-    try {
-        let dataView = helpers.admin.get_data_view_admin(req, mod_config);
-        let fields = await moduleModel.get_fields(mod_config,'__v',dataView.role);
-        let field_keys = Object.keys(fields);
-        dataView.field_keys = field_keys;
-        dataView.fields = fields;
-        res.render('./layout/partial/export', dataView);
-    } catch (e) {
-        console.log(e);
-        req.flash('msg_error', e.message);
-        return helpers.base.redirect(res, mod_config.route);
-    }
+album.get("/export", async function (req, res) {
+	try {
+		let dataView = helpers.admin.get_data_view_admin(req, mod_config);
+		let fields = await moduleModel.get_fields(mod_config, "__v", dataView.role);
+		let field_keys = Object.keys(fields);
+		dataView.field_keys = field_keys;
+		dataView.fields = fields;
+		res.render("./layout/partial/export", dataView);
+	} catch (e) {
+		console.log(e);
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route);
+	}
 });
 
 //Export
-album.post('/export', async function(req, res){
-    try {
-        const dataPost = {...req.body};
+album.post("/export", async function (req, res) {
+	try {
+		const dataPost = { ...req.body };
 
-        let offset = helpers.base.parseInteger(dataPost.offset)
-        if(offset == 0) offset = 1;
-        const limit = appConfig.export_limit || 50
-        const skip = parseInt((offset-1) * limit);
+		let offset = helpers.base.parseInteger(dataPost.offset);
+		if (offset == 0) offset = 1;
+		const limit = appConfig.export_limit || 50;
+		const skip = parseInt((offset - 1) * limit);
 
-        const filterData = JSON.parse(dataPost.data);
-        const columns = Object.keys(filterData)
-        const fields = await moduleModel.get_fields(mod_config,'__v');
-        if(ctypeof(columns) !== 'array' || columns.length == 0 || !helpers.base.arrayContainsArray(columns,Object.keys(fields))){
-            return res.json({error:1, msg:'Invalid column'})
-        }
+		const filterData = JSON.parse(dataPost.data);
+		const columns = Object.keys(filterData);
+		const fields = await moduleModel.get_fields(mod_config, "__v");
+		if (ctypeof(columns) !== "array" || columns.length == 0 || !helpers.base.arrayContainsArray(columns, Object.keys(fields))) {
+			return res.json({ error: 1, msg: "Invalid column" });
+		}
 
-        const conditions = helpers.admin.buildQuery(filterData, fields);
-        const data = await moduleModel.find(mod_config.collection, conditions,columns.join(' '),{},limit,skip);
-        let convertData = []
-        if(data && data.length > 0){
-            for(let i=0; i< data.length;i++){
-                let item = []
-                for (let j = 0; j < columns.length; j++) {
-                    let field_type = fields[columns[j]];
-                    item.push(helpers.admin.convertDataExport(data[i][columns[j]],field_type));
-                }
-                convertData.push(item)
-            }
-        }
-        return res.json({error:0, data:convertData, msg:'Success'})
-    } catch (e) {
-        clog(e)
-        return res.json({error:1, msg:e.message})
-    }
+		const conditions = helpers.admin.buildQuery(filterData, fields);
+		const data = await moduleModel.find(mod_config.collection, conditions, columns.join(" "), {}, limit, skip);
+		let convertData = [];
+		if (data && data.length > 0) {
+			for (let i = 0; i < data.length; i++) {
+				let item = [];
+				for (let j = 0; j < columns.length; j++) {
+					let field_type = fields[columns[j]];
+					item.push(helpers.admin.convertDataExport(data[i][columns[j]], field_type));
+				}
+				convertData.push(item);
+			}
+		}
+		return res.json({ error: 0, data: convertData, msg: "Success" });
+	} catch (e) {
+		clog(e);
+		return res.json({ error: 1, msg: e.message });
+	}
 });
 
 //delete
-album.post('/delete', async function (req, res) {
-    let post_data = {...req.body};
-    if(post_data != null && !post_data.listViewId){
-        req.flash('msg_error','Delete error.');
-        return helpers.base.redirect(res,mod_config.route);
-    }
+album.post("/delete", async function (req, res) {
+	let post_data = { ...req.body };
+	if (post_data != null && !post_data.listViewId) {
+		req.flash("msg_error", "Delete error.");
+		return helpers.base.redirect(res, mod_config.route);
+	}
 
-    try	{
-        let condition = { _id: { $in: post_data.listViewId } };
-        let oldData = await moduleModel.findAll(mod_config.collection,condition);
-        let del = await moduleModel.deleteMany(mod_config.collection,condition);
-        if(del.status){
-            if(oldData) helpers.log.logDelete(req,{collection:mod_config.collection,data:oldData})
-            req.flash('msg_success' , "Delete success.");
-        }else{
-            req.flash('msg_error' , "Delete fail.");
-        }
-        return helpers.base.redirect(res,mod_config.route);
-    } catch(e){
-        console.log(e);
-        req.flash('msg_error' , e.message);
-        return helpers.base.redirect(res,mod_config.route);
-    }
+	try {
+		let condition = { _id: { $in: post_data.listViewId } };
+		let oldData = await moduleModel.findAll(mod_config.collection, condition);
+		let del = await moduleModel.deleteMany(mod_config.collection, condition);
+		if (del.status) {
+			if (oldData) helpers.log.logDelete(req, { collection: mod_config.collection, data: oldData });
+			req.flash("msg_success", "Delete success.");
+		} else {
+			req.flash("msg_error", "Delete fail.");
+		}
+		return helpers.base.redirect(res, mod_config.route);
+	} catch (e) {
+		console.log(e);
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route);
+	}
 });
 
 //Get detail
-album.get('/detail/:_id', async function(req, res){
-    try {
-        //validate
-        const validator = new helpers.validate();
-        let valid_error = validator.isObjectId(req.params._id,'ID must be ObjectID').hasErrors();
-        if(valid_error.length > 0){
-            req.flash('msg_error',valid_error);
-            return helpers.base.redirect(res,mod_config.route);
-        }
+album.get("/detail/:_id", async function (req, res) {
+	try {
+		//validate
+		const validator = new helpers.validate();
+		let valid_error = validator.isObjectId(req.params._id, "ID must be ObjectID").hasErrors();
+		if (valid_error.length > 0) {
+			req.flash("msg_error", valid_error);
+			return helpers.base.redirect(res, mod_config.route);
+		}
 
-        const dataView = helpers.admin.get_data_view_admin(req,mod_config);
-        const record = await moduleModel.findOne(mod_config.collection,{'_id':req.params._id});
-        if (record) {
-            dataView.fields = await moduleModel.get_fields(mod_config, '__v');
-            dataView.data_detail = dataView.post_data.length > 0 ? dataView.post_data :record;
-            res.render('./layout/partial/view', dataView);
-        }else{
-            req.flash('msg_error', 'Data null');
-            return helpers.base.redirect(res,mod_config.route);
-        }
-    } catch(e) {
-        req.flash('msg_error',e.message);
-        return helpers.base.redirect(res,mod_config.route);
-    }
+		const dataView = helpers.admin.get_data_view_admin(req, mod_config);
+		const record = await moduleModel.findOne(mod_config.collection, { _id: req.params._id });
+		if (record) {
+			dataView.fields = await moduleModel.get_fields(mod_config, "__v");
+			dataView.data_detail = dataView.post_data.length > 0 ? dataView.post_data : record;
+			res.render("./layout/partial/view", dataView);
+		} else {
+			req.flash("msg_error", "Data null");
+			return helpers.base.redirect(res, mod_config.route);
+		}
+	} catch (e) {
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route);
+	}
 });
 
 // report view
@@ -434,6 +434,86 @@ album.post("/report", async function (req, res) {
 			status: 500,
 			msg: e.message,
 		});
+	}
+});
+
+album.get("/drive", async function (req, res) {
+	try {
+		const dataView = helpers.admin.get_data_view_admin(req, mod_config);
+		let ignore_fields = "__v update_by createdAt updatedAt";
+		dataView.fields = await moduleModel.get_fields(mod_config, ignore_fields);
+		res.render("./" + mod_config.module + "/" + mod_config.view + "/drive", dataView);
+	} catch (e) {
+		console.log(e);
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route);
+	}
+});
+
+async function getAllImages(folderId) {
+	const { google } = require("googleapis");
+	const fileService = "./d-social-login1-1118-d661611f82c9.json";
+
+	const auth = new google.auth.GoogleAuth({
+		keyFile: fileService, // Đường dẫn đến file JSON bạn vừa tải
+		scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+	});
+	const drive = google.drive({ version: "v3", auth });
+
+	const allFiles = [];
+	let nextPageToken = null;
+
+	do {
+		const res = await drive.files.list({
+			q: `'${folderId}' in parents and mimeType contains 'image/' and trashed=false`,
+			fields: "nextPageToken, files(id, name, thumbnailLink, mimeType)",
+			pageSize: 1000,
+			pageToken: nextPageToken || undefined,
+		});
+
+		allFiles.push(...res.data.files);
+		nextPageToken = res.data.nextPageToken;
+	} while (nextPageToken);
+
+	return allFiles;
+}
+//Post add
+album.post("/drive", async function (req, res) {
+	try {
+		let postData = { ...req.body };
+		//create
+		// const folderId = "1WqW7GCgdA4PrxF6mNCsC-sfL60llYDL-";
+		const folderId = postData?.folderId;
+		console.log(folderId, "folderId");
+		const files = await getAllImages(folderId);
+
+		if (files.length === 0) {
+			console.log("No images found.");
+			return;
+		}
+
+		const imageLinks = files.map((file, index) => ({
+			name: file.name,
+			link: `https://drive.google.com/uc?export=view&id=${file.id}`,
+			thumb: file?.thumbnailLink,
+			image: `https://drive.google.com/uc?export=view&id=${file.id}`,
+			status: 1,
+			tags: ["all"],
+			is_hot: 0,
+			weight: index,
+		}));
+
+		let create = await moduleModel.create(mod_config.collection, imageLinks, true);
+		if (create.status) {
+			req.flash("msg_success", "Add success");
+			return helpers.base.redirect(res, mod_config.route);
+		} else {
+			req.flash("msg_error", create.msg);
+			return helpers.base.redirect(res, mod_config.route + "/");
+		}
+	} catch (e) {
+		req.flash("msg_error", e.message);
+		return helpers.base.redirect(res, mod_config.route + "/");
 	}
 });
 module.exports = album;

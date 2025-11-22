@@ -33,6 +33,7 @@
 		"express-session": "^1.17.3",
 		"express-validator": "^7.0.1",
 		"file-type": "^18.5.0",
+		"googleapis": "^166.0.0",
 		"helmet": "^7.0.0",
 		"http-status": "^1.7.0",
 		"https-proxy-agent": "^7.0.0",
