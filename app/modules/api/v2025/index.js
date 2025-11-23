@@ -18,6 +18,7 @@ v2025.use("/mini", require("./mini/index"));
 v2025.use("/album", require("./album/index"));
 v2025.use("/photo", require("./photo/index"));
 v2025.use("/invitee", require("./invitee/index"));
+v2025.use("/message", require("./message/index"));
 
 // v2025.use("/user", checkLoginToken, require("./user/index"));
 // v2025.use("/exercise", require("./exercise/index"));

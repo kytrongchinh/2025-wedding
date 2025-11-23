@@ -130,6 +130,7 @@ module.exports = {
 		INVITEE: "wd_invitees",
 		ALBUM: "wd_albums",
 		PHOTO: "wd_photos",
+		MESSAGE: "wd_messages",
 	},
 	REGISTER_FORM_FIELDS: [
 		{

@@ -7,6 +7,7 @@ const {
 } = require("../../../../configs/constants");
 const weddingModal = require("../../../weddings/models");
 const _ = require("lodash");
+const { default: slugify } = require("slugify");
 photo.get("/", async function (req, res) {
 	try {
 		const requestData = helpers.admin.filterXSS(req.query);
@@ -23,11 +24,20 @@ photo.get("/", async function (req, res) {
 		if (requestData?.from) {
 			conditions["from"] = from;
 		}
+		const slug_name = slugify(requestData?.tags, {
+			replacement: "-", // replace spaces with replacement character, defaults to `-`
+			remove: undefined, // remove characters that match regex, defaults to `undefined`
+			lower: false, // convert to lower case, defaults to `false`
+			strict: false, // strip special characters except replacement, defaults to `false`
+			locale: "vi", // language code of the locale to use
+			trim: true,
+		});
 		if (requestData?.tags) {
-			conditions["tags"] = { $in: [requestData?.tags] };
+			// conditions["tags"] = { $in: [slug_name] };
+			conditions["tags"] = { $regex: new RegExp(slug_name, "i") };
 		}
 		const items = await weddingModal.find(COLLECTIONS.PHOTO, conditions, "", sort, limit, skip);
-		const total = await miloModal.count(COLLECTIONS.PHOTO, conditions);
+		const total = await weddingModal.count(COLLECTIONS.PHOTO, conditions);
 		const result = {
 			error: 0,
 			message: "Success",

@@ -82,8 +82,8 @@ const app = express();
 const cors = require("cors");
 
 const allowlist = [
-	"http://localhost:3033",
-	"http://localhost:4036",
+	"http://localhost:3035",
+	"http://localhost:2036",
 	"https://budweiser2025.vn",
 	"https://stg-budweiser2025.brand.zing.vn",
 	"https://www.googletagmanager.com",
@@ -220,7 +220,7 @@ app.use(function (req, res, next) {
 	//ignore token on whitelist route
 	if (appConfig.csrfIgnore.indexOf(req.path) != -1) return next();
 
-	const urlCondition = req.path.includes("v2024");
+	const urlCondition = req.path.includes("v2025");
 	const tokenCondition = req?.headers?.verify_token && req.headers.verify_token === appConfig.MINIAPP_TOKEN_VERIFY;
 
 	if (urlCondition) {

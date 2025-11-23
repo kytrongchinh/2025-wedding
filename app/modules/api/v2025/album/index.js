@@ -27,7 +27,7 @@ album.get("/", async function (req, res) {
 			conditions["tags"] = { $in: [requestData?.tags] };
 		}
 		const items = await weddingModal.find(COLLECTIONS.ALBUM, conditions, "", sort, limit, skip);
-		const total = await miloModal.count(COLLECTIONS.ALBUM, conditions);
+		const total = await weddingModal.count(COLLECTIONS.ALBUM, conditions);
 		const result = {
 			error: 0,
 			message: "Success",
