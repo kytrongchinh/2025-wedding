@@ -1,11 +1,11 @@
 {
 	"apps": [
 		{
-			"name": "2025-cp-bud-utc-summer",
+			"name": "2025-wedding",
 			"script": "./bin/www",
 			"ignore_watch": ["node_modules"],
 			"env": {
-				"NODE_ENV": "development"
+				"NODE_ENV": "production"
 			},
 			"env_development": {
 				"NODE_ENV": "development"
