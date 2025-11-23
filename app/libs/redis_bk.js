@@ -3,20 +3,35 @@
  */
 const IoRedis = require("ioredis");
 
+// const redisConfig = {
+//     host: process.env.REDIS_HOST,
+//     port: process.env.REDIS_PORT,
+//     prefix: `${process.env.REDIS_PREFIX}_${process.env.ENV}_`,
+//     username: process.env.REDIS_USER,
+//     password: process.env.REDIS_PASS,
+//     ttl: process.env.REDIS_TTL,
+//     db: process.env.REDIS_DB,
+//     options: {}
+// }
+//clog('redisConfig',redisConfig)
+const { REDIS_CONFIG } = require("../configs/redis.constant");
+
 class Redis {
 	/**
 	 *
 	 * @param {Object} options
 	 */
-	constructor({ host, port, password, prefix, username }) {
-		// console.log(host, port, password, prefix, username, "dddd");
-		this.prefix = prefix;
+	// constructor({ host, port, password, prefix, username }) {
+	constructor() {
+		//console.log(host, port, password, prefix, username, "dddd");
+		this.prefix = REDIS_CONFIG.keyPrefix;
 		this.client = new IoRedis({
-			keyPrefix: prefix,
-			port: port,
-			host: host,
-			username: username,
-			password: password,
+			...REDIS_CONFIG,
+			// keyPrefix: prefix,
+			// port: port,
+			// host: host,
+			// username: username,
+			// password: password,
 			enableReadyCheck: false,
 			showFriendlyErrorStack: true, // set true on production
 			maxRetriesPerRequest: null,
@@ -487,7 +502,6 @@ class Redis {
 	 * @returns {Promise|any|Promise<T>} {0|1}
 	 */
 	sadd(key, value, expire = 3600) {
-		const log = this;
 		return new Promise((resolve) => {
 			this.client
 				.multi()
@@ -495,7 +509,7 @@ class Redis {
 				.expire(key, expire)
 				.exec(function (err, rsp) {
 					if (err) {
-						err && log._log(err, { key, value, expire });
+						err && this._log(err, { key, value, expire });
 						return resolve(0);
 					}
 					return resolve(rsp[0]);
@@ -638,4 +652,5 @@ class Redis {
 	}
 }
 
-module.exports = new Redis(appConfig.redis);
+// module.exports = new Redis(redisConfig);
+module.exports = new Redis();

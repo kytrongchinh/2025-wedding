@@ -3,7 +3,7 @@ const path = require('path');
 
 const libs = {};
 
-const ignore = ['index.js','social.js','mongoose.js'];
+const ignore = ['index.js','social.js','mongoose.js', 'redis_bk.js'];
 
 fs.readdirSync(__dirname).filter(function(file){
     return (file.lastIndexOf('.js') > 0) && (file.length - 3 == file.lastIndexOf('.js')) && (ignore.indexOf(file) === -1);
