@@ -1,9 +1,6 @@
 <footer class="main-footer">
-    <div class="pull-right hidden-xs">
-        <b>Version</b> 2.0.0
-    </div>
-    <strong>Copyright &copy; 2023 Adtima Tech.</strong> All rights
-    reserved.
+	<div class="pull-right hidden-xs"><b>Version</b> 2.0.0</div>
+	<strong>Copyright &copy; 2023 Adtima Tech.</strong> All rights reserved.
 </footer>
 <!-- jQuery UI 1.11.4 -->
 <!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script> -->
@@ -11,7 +8,7 @@
 
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script type="text/javascript">
-    $.widget.bridge('uibutton', $.ui.button);
+	$.widget.bridge("uibutton", $.ui.button);
 </script>
 
 <!-- Bootstrap 3.3.7 -->
@@ -26,8 +23,8 @@
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 <script src="<%=publicUrl%>admin/js/jquery.alerts.js"></script>
 
@@ -38,56 +35,63 @@
 <script src="<%=publicUrl%>admin/js/bootstrap-datetimepicker.min.js"></script>
 <script src="<%=publicUrl%>admin/js/admin.js?v=<%=_versionCache%>"></script>
 
-
 <script>
-    function fallbackCopyTextToClipboard(text) {
-        var textArea = document.createElement("textarea");
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        // $("#input-url").val(text);
-        // $("#input-url").select();
-        try {
-            var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            // console.log('Fallback: Copying text command was ' + msg);
-        } catch (err) {
-            //  console.error('Fallback: Oops, unable to copy', err);
-        }
+	function fallbackCopyTextToClipboard(text) {
+		var textArea = document.createElement("textarea");
+		textArea.value = text;
+		document.body.appendChild(textArea);
+		textArea.focus();
+		textArea.select();
+		// $("#input-url").val(text);
+		// $("#input-url").select();
+		try {
+			var successful = document.execCommand("copy");
+			var msg = successful ? "successful" : "unsuccessful";
+			// console.log('Fallback: Copying text command was ' + msg);
+		} catch (err) {
+			//  console.error('Fallback: Oops, unable to copy', err);
+		}
 
-        document.body.removeChild(textArea);
-    }
+		document.body.removeChild(textArea);
+	}
 
-    function copyTextToClipboard(text) {
-        if (!navigator.clipboard) {
-            fallbackCopyTextToClipboard(text);
-            return;
-        }
-        navigator.clipboard.writeText(text).then(function () {
-            //console.log('Async: Copying to clipboard was successful!');
-        }, function (err) {
-            // console.error('Async: Could not copy text: ', err);
-        });
-    }
+	function copyTextToClipboard(text) {
+		if (!navigator.clipboard) {
+			fallbackCopyTextToClipboard(text);
+			return;
+		}
+		navigator.clipboard.writeText(text).then(
+			function () {
+				//console.log('Async: Copying to clipboard was successful!');
+			},
+			function (err) {
+				// console.error('Async: Could not copy text: ', err);
+			}
+		);
+	}
 
-
-    function click_copy_data_in_list(e) {
-        let $this = $(e);
-        var content = $this.text();
-        console.log(content)
-        copyTextToClipboard(content);
-    }
+	function click_copy_data_in_list(e) {
+		let $this = $(e);
+		var content = $this.text();
+		console.log(content);
+		copyTextToClipboard(content);
+	}
 </script>
-<link rel="stylesheet" href="<%=publicUrl%>admin/js/fancybox-bootstrap/jquery.fancybox.min.css" media="screen">
+<link rel="stylesheet" href="<%=publicUrl%>admin/js/fancybox-bootstrap/jquery.fancybox.min.css" media="screen" />
 <script src="<%=publicUrl%>admin/js/fancybox-bootstrap/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
-    $(document).ready(function () {
-        //FANCYBOX
-        //https://github.com/fancyapps/fancyBox
-        $(".fancybox").fancybox({
-            openEffect: "none",
-            closeEffect: "none"
-        });
-    });
+	$(document).ready(function () {
+		//FANCYBOX
+		//https://github.com/fancyapps/fancyBox
+		$(".fancybox").fancybox({
+			openEffect: "none",
+			closeEffect: "none",
+		});
+	});
 </script>
+<style>
+	.select2 b {
+		padding-right: 0px !important;
+		min-width: 0px !important;
+	}
+</style>

@@ -1215,6 +1215,19 @@ helper.get_field_value_custom_old = function (field, value, type) {
 				} else if (value.indexOf("http") == 0 && value.indexOf("graph.facebook") > 0) {
 					//photo facebook
 					value = '<img class="avatar" style="max-width: 350px;" src="' + value + '">';
+				} else if (value.indexOf("https") == 0 && value.indexOf("drive.google.com") > 0) {
+					//photo driver
+					// value = '<img class="avatar" style="max-width: 350px;" src="' + value + '">';
+					value =
+						'<a class="fancybox" title="' +
+						value +
+						'" rel="' +
+						value +
+						'" href="' +
+						value +
+						'" ><img class="avatar" style="max-width: 150px; max-height: 150px;" src="' +
+						value +
+						'"></a>';
 				} else {
 					if (value.length > 250) {
 						value = '<p class="text-muted" style="min-width: 300px !important;">' + value + "</p>";
@@ -1331,6 +1344,32 @@ helper.get_field_value_custom = function (field, value, type, myclass = "") {
 				} else if (value.indexOf("http") == 0 && value.indexOf("graph.facebook") > 0) {
 					//photo facebook
 					value = '<img class="avatar pull-right" style="max-width: 150px;" src="' + value + '">';
+				} else if (value.indexOf("https") == 0 && value.indexOf("drive.google.com") > 0) {
+					//photo driver
+					// value = '<img class="avatar" style="max-width: 350px;" src="' + value + '">';
+					value =
+						'<a class="fancybox pull-right" title="' +
+						value +
+						'" rel="' +
+						value +
+						'" href="' +
+						value +
+						'" ><img class="avatar" style="max-width: 30px; max-height: 25px;" src="' +
+						value +
+						'"></a>';
+				} else if (value.indexOf("https") == 0 && value.indexOf("googleusercontent.com") > 0) {
+					//photo driver
+					// value = '<img class="avatar" style="max-width: 350px;" src="' + value + '">';
+					value =
+						'<a class="fancybox pull-right" title="' +
+						value +
+						'" rel="' +
+						value +
+						'" href="' +
+						value +
+						'" ><img class="avatar" style="max-width: 350px;" src="' +
+						value +
+						'"></a>';
 				} else {
 					if (value.length > 250) {
 						value = `<span class="text-muted ${myclass} pull-right" style="min-width: 300px !important; text-align: justify;" onclick="click_copy_data_in_list(this)">${value}</span>`;
@@ -1359,22 +1398,38 @@ helper.get_field_value_custom = function (field, value, type, myclass = "") {
 	}
 };
 
-helper.get_query_data = function(data,field){
-    var value = '';
-    if(data === null || typeof data != 'object' || !field){
-        return value;
-    }
-    try {
-        if(data[field] !== undefined) {
-            value = data[field];
-        }else if(typeof data[0] !== 'undefined'){
-            value = data[0][field];
-        }
-        return this.filterXSS(value);
-    } catch(e) {
-        console.log(e);
-        return this.filterXSS(value);
-    }
+helper.get_query_data = function (data, field) {
+	var value = "";
+	if (data === null || typeof data != "object" || !field) {
+		return value;
+	}
+	try {
+		if (data[field] !== undefined) {
+			value = data[field];
+		} else if (typeof data[0] !== "undefined") {
+			value = data[0][field];
+		}
+		return this.filterXSS(value);
+	} catch (e) {
+		console.log(e);
+		return this.filterXSS(value);
+	}
+};
+
+helper.loadTags = async function (data, field) {
+	try {
+		const weddingModal = require("../modules/weddings/models");
+		const items = await weddingModal.findAll("wd_invitees", { status: 1 }, "name slug_name status");
+		let options = ``;
+		for (let item = 0; item < items.length; item++) {
+			const element = items[item];
+			options += options += `<option value="${element?.slug_name}">${element?.name}</option>`;
+		}
+		return options;
+	} catch (e) {
+		console.log(e);
+		return null;
+	}
 };
 
 module.exports = helper;

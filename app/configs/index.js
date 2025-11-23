@@ -35,7 +35,7 @@ const appConfig = {
 			"'self' 'unsafe-inline' 'unsafe-eval' *.zdn.vn *.zalo.me *.google.com *.gstatic.com cdn.jsdelivr.net adminlte.io *.zsl.zdn.vn *.googletagmanager.com connect.facebook.net",
 		"style-src": "'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com *.gstatic.com *.jsdelivr.net adminlte.io *.cloudflare.com *.zsl.zdn.vn *.zdn.vn",
 		"connect-src": "'self' *.zdn.vn *.zing.vn *.zalo.me *.google-analytics.com *.facebook.com",
-		"img-src": "'self' *.zdn.vn data: *.zingcdn.me *.zing.vn *.zadn.vn *.zalo.me *.zsl.zdn.vn opencollective.com",
+		"img-src": "'self' *.zdn.vn data: *.zingcdn.me *.zing.vn *.zadn.vn *.zalo.me *.zsl.zdn.vn opencollective.com *.googleusercontent.com *.google.com",
 		"font-src": "'self' *.zdn.vn 'unsafe-inline' *.googleapis.com *.gstatic.com data: *.zing.vn",
 		"frame-src": "'self' *.zdn.vn *.google.com *.zing.vn *.zalo.me",
 		"frame-ancestors": "'self' *.zdn.vn *.zing.vn",
@@ -176,6 +176,10 @@ const appConfig = {
 		EXPIRED_TIME: envConfigs.JWT_EXPIRED_TIME,
 	},
 	MINIAPP_TOKEN_VERIFY: envConfigs.MINIAPP_TOKEN_VERIFY,
+	GOOGLE_CLIENT: {
+		EMAIL: envConfigs.GOOGLE_CLIENT_EMAIL,
+		PRIVATE_KEY: envConfigs.GOOGLE_PRIVATE_KEY,
+	}
 };
 
 //clog('appConfig',appConfig);

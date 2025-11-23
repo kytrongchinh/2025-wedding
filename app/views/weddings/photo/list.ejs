@@ -83,9 +83,15 @@
                                 </td>
                                 <%}%>
                                 <% Object.keys(fields).forEach(function(field){ %>
-                                <td>
-                                    <%- helpers.admin.get_field_value_custom(field, row[field], fields[field])%>
-                                </td>
+                                    <% if (field == "image" || field == "link") { %>
+                                        <td>
+                                            <img src="https://drive.google.com/thumbnail?id=<%=row['id_image']%>&sz=s100`" />
+                                        </td>
+                                    <% } else { %>
+                                        <td>
+                                            <%- helpers.admin.get_field_value_custom(field, row[field], fields[field])%>
+                                        </td>
+                                    <% } %>
                                 <% }); %>
 
                                 <td>

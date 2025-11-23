@@ -451,31 +451,39 @@ album.get("/drive", async function (req, res) {
 });
 
 async function getAllImages(folderId) {
-	const { google } = require("googleapis");
-	const fileService = "./d-social-login1-1118-d661611f82c9.json";
+	try {
+		const { google } = require("googleapis");
+		// const fileService = "./d-social-login1-1118-52bde76f9e90.json";
 
-	const auth = new google.auth.GoogleAuth({
-		keyFile: fileService, // Đường dẫn đến file JSON bạn vừa tải
-		scopes: ["https://www.googleapis.com/auth/drive.readonly"],
-	});
-	const drive = google.drive({ version: "v3", auth });
-
-	const allFiles = [];
-	let nextPageToken = null;
-
-	do {
-		const res = await drive.files.list({
-			q: `'${folderId}' in parents and mimeType contains 'image/' and trashed=false`,
-			fields: "nextPageToken, files(id, name, thumbnailLink, mimeType)",
-			pageSize: 1000,
-			pageToken: nextPageToken || undefined,
+		const auth = new google.auth.GoogleAuth({
+			// keyFile: fileService, // Đường dẫn đến file JSON bạn vừa tải
+			credentials: {
+				client_email: appConfig.GOOGLE_CLIENT.EMAIL,
+				private_key: appConfig.GOOGLE_CLIENT.PRIVATE_KEY.replace(/\\n/g, "\n"),
+			},
+			scopes: ["https://www.googleapis.com/auth/drive.readonly"],
 		});
+		const drive = google.drive({ version: "v3", auth });
 
-		allFiles.push(...res.data.files);
-		nextPageToken = res.data.nextPageToken;
-	} while (nextPageToken);
+		const allFiles = [];
+		let nextPageToken = null;
 
-	return allFiles;
+		do {
+			const res = await drive.files.list({
+				q: `'${folderId}' in parents and mimeType contains 'image/' and trashed=false`,
+				fields: "nextPageToken, files(id, name, thumbnailLink, mimeType, size)",
+				pageSize: 1000,
+				pageToken: nextPageToken || undefined,
+			});
+
+			allFiles.push(...res.data.files);
+			nextPageToken = res.data.nextPageToken;
+		} while (nextPageToken);
+
+		return allFiles;
+	} catch (error) {
+		console.log(error, "loio");
+	}
 }
 //Post add
 album.post("/drive", async function (req, res) {
@@ -493,17 +501,20 @@ album.post("/drive", async function (req, res) {
 		}
 
 		const imageLinks = files.map((file, index) => ({
-			name: file.name,
+			name: file?.name.substring(0, file?.name.lastIndexOf(".")),
 			link: `https://drive.google.com/uc?export=view&id=${file.id}`,
 			thumb: file?.thumbnailLink,
 			image: `https://drive.google.com/uc?export=view&id=${file.id}`,
 			status: 1,
-			tags: ["all"],
+			id_image: file.id,
+			size: file?.size,
+			mimeType: file?.mimeType,
+			tags: [],
 			is_hot: 0,
 			weight: index,
 		}));
 
-		let create = await moduleModel.create(mod_config.collection, imageLinks, true);
+		let create = await moduleModel.insertMany(mod_config.collection, imageLinks);
 		if (create.status) {
 			req.flash("msg_success", "Add success");
 			return helpers.base.redirect(res, mod_config.route);

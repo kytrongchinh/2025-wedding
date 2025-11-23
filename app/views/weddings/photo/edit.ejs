@@ -1,4 +1,5 @@
 <%- include('../../layout/admin/_head') -%>
+
 <!-- Content Header (Page header) -->
 <section class="content-header form-inline">
     <h1>Edit <%= mod_alias%><small><a href="<%= mod_url%>"><i class="fa fa-reply"></i></a></small></h1>
@@ -30,23 +31,35 @@
                             <tbody>
                             <% Object.keys(fields).forEach(function(field) { %>
                             <% if (field != '_id' && field != 'createdAt' && field != 'updatedAt') { %>
-                            <tr>
-                                <td><label for="<%=field%>"><%=field%></label></td>
-                                <td>
-                                    <% var field_value = helpers.admin.get_query_data(data_edit,field); %>
-                                    <% if(fields[field] == 'Boolean'){ %>
-                                    <select class="form-control small" id="<%= field%>" name="<%= field%>">
-                                        <option value=""></option>
-                                        <option <% if(field_value === 'true' || field_value === true){%> selected <%}%> value="true">Active</option>
-                                        <option <% if(field_value === 'false' || field_value === false){%> selected <%}%> value="false">Disable</option>
-                                    </select>
-                                    <%} else if(fields[field] == 'Mixed' || fields[field] == 'Array'){%>
-                                        <textarea id="<%=field%>" name="<%=field%>" cols="30" rows="10"><%=JSON.stringify(field_value)%></textarea>
-                                    <% }else{%>
-                                    <input type="text" class="form-control medium" value="<%=field_value%>" id="<%=field%>" name="<%=field%>"/>
-                                    <% } %>
-                                </td>
-                            </tr>
+                                <% if (field =="tags") { %>
+                                    <tr>
+                                        <td><label for="<%=field%>"><%=field%></label></td>
+                                        <td>
+                                            <% var field_value = helpers.admin.get_query_data(data_edit,field); %>
+                                            <select class="form-control medium select2" name="<%= field%>[]" multiple="multiple">
+                                                <%- tags%>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                <% } else { %>
+                                    <tr>
+                                        <td><label for="<%=field%>"><%=field%></label></td>
+                                        <td>
+                                            <% var field_value = helpers.admin.get_query_data(data_edit,field); %>
+                                            <% if(fields[field] == 'Boolean'){ %>
+                                            <select class="form-control small" id="<%= field%>" name="<%= field%>">
+                                                <option value=""></option>
+                                                <option <% if(field_value === 'true' || field_value === true){%> selected <%}%> value="true">Active</option>
+                                                <option <% if(field_value === 'false' || field_value === false){%> selected <%}%> value="false">Disable</option>
+                                            </select>
+                                            <%} else if(fields[field] == 'Mixed' || fields[field] == 'Array'){%>
+                                                <textarea id="<%=field%>" name="<%=field%>" cols="30" rows="10"><%=JSON.stringify(field_value)%></textarea>
+                                            <% }else{%>
+                                            <input type="text" class="form-control medium" value="<%=field_value%>" id="<%=field%>" name="<%=field%>"/>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% } %>
                             <% } %>
                             <% }); %>
                             <tr>
