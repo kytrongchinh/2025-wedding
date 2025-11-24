@@ -84,8 +84,7 @@ const cors = require("cors");
 const allowlist = [
 	"http://localhost:3035",
 	"http://localhost:2036",
-	"https://budweiser2025.vn",
-	"https://stg-budweiser2025.brand.zing.vn",
+	"https://thiephong.online",
 	"https://www.googletagmanager.com",
 	"https://zalo.me",
 	"https://h5.zadn.vn",
