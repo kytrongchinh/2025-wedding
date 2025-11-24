@@ -23,6 +23,116 @@ info.get("/", async function (req, res) {
 			endDate: date_end,
 			name: name,
 			tag: " MILO_TET_",
+			wedding: {
+				bride: "Mi Mie",
+				groom: "Ky Chin",
+			},
+		};
+		const result = {
+			error: 0,
+			message: "Success",
+			data: data,
+		};
+
+		return utils.common.response(req, res, result);
+	} catch (error) {
+		const result = {
+			error: -1,
+			message: "Error: " + error.message,
+			data: null,
+		};
+		return utils.common.response(req, res, result, 400);
+	}
+});
+
+info.get("/wedding", async function (req, res) {
+	try {
+		const data = {
+			name: "LỄ VU QUY",
+			bride: {
+				name: "NHÀ GÁI",
+				farther: {
+					name: "Nguyễn Văn Bảy",
+					title: "Anh",
+				},
+				mother: {
+					name: "Nguyễn Thị Hường",
+					title: "Chị",
+				},
+				address: "07 Trần Hưng Đạo, Phường Lê Lợi, Lâm Đồng",
+			},
+
+			groom: {
+				name: "NHÀ TRAI",
+				farther: {
+					name: "Nguyễn Văn Ba",
+					title: "Anh",
+				},
+				mother: {
+					name: "Nguyễn Thị Năm",
+					title: "Chị",
+				},
+				address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
+			},
+			time: "9:00 SÁNG",
+			lunar_date: "Nhầm ngày 02.11 Năm Ất Tỵ",
+		};
+		const result = {
+			error: 0,
+			message: "Success",
+			data: data,
+		};
+
+		return utils.common.response(req, res, result);
+	} catch (error) {
+		const result = {
+			error: -1,
+			message: "Error: " + error.message,
+			data: null,
+		};
+		return utils.common.response(req, res, result, 400);
+	}
+});
+
+info.get("/timeline", async function (req, res) {
+	try {
+		const data = {
+			bride: {
+				ancestral_ceremony: {
+					name: "LỄ GIA TIÊN",
+					at: "Tư gia nhà gái",
+					address: "07 Trần Hưng Đạo, Phường Lê Lợi, Lâm Đồng",
+					time: "9:00 21.12.2025",
+				},
+				party: {
+					name: "TIỆC RƯỢU",
+					at: "Nhà hàng Tuấn Thảo",
+					address: "07 Trần Hưng Đạo, Phường Lê Lợi, Lâm Đồng",
+					time: "11:00 21.12.2025",
+				},
+			},
+
+			groom: {
+				ancestral_ceremony: {
+					name: "LỄ GIA TIÊN",
+					at: "Tư gia nhà trai",
+					address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
+					time: "10:00 25.12.2025",
+				},
+				party: {
+					name: "TIỆC RƯỢU",
+					at: "Nhà hàng Thanh Hường",
+					address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
+					time: "11:30 25.12.2025",
+				},
+			},
+
+			wedding_party: {
+				name: "TIỆC BÁO HỶ",
+				at: "Én Restaurant & Event Space",
+				address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
+				time: "19h 08.01.2026",
+			},
 		};
 		const result = {
 			error: 0,
