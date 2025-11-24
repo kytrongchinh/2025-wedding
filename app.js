@@ -83,7 +83,8 @@ const cors = require("cors");
 
 const allowlist = [
 	"http://localhost:3035",
-	"http://localhost:2036",
+	"http://localhost:4036",
+	"http://localhost:3035",
 	"https://thiephong.online",
 	"https://www.googletagmanager.com",
 	"https://zalo.me",
@@ -220,6 +221,7 @@ app.use(function (req, res, next) {
 	if (appConfig.csrfIgnore.indexOf(req.path) != -1) return next();
 
 	const urlCondition = req.path.includes("v2025");
+	console.log(req?.headers,"req?.headers")
 	const tokenCondition = req?.headers?.verify_token && req.headers.verify_token === appConfig.MINIAPP_TOKEN_VERIFY;
 
 	if (urlCondition) {

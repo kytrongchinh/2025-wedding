@@ -120,7 +120,7 @@ const appConfig = {
 		redirect_uri: `${envConfigs.BASE_URL}/social/login/facebook`,
 	},
 	//gg_app: {
-		
+
 	//},
 	login: {
 		incorrect: 10, //blocking after 10 times invalid
@@ -179,7 +179,7 @@ const appConfig = {
 	GOOGLE_CLIENT: {
 		EMAIL: envConfigs.GOOGLE_CLIENT_EMAIL,
 		PRIVATE_KEY: envConfigs.GOOGLE_PRIVATE_KEY,
-	}
+	},
 };
 
 //clog('appConfig',appConfig);
