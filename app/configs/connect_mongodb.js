@@ -14,7 +14,7 @@ const options = {
 };
 
 mongoose.set("strictQuery", false);
-console.log(constants.MongoURL, "constants.MongoURL");
+// console.log(constants.MongoURL, "constants.MongoURL");
 mongoose
 	.connect(encodeURI(constants.MongoURL), options)
 	.then(() => {
