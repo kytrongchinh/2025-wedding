@@ -48,7 +48,7 @@ info.get("/", async function (req, res) {
 info.get("/wedding", async function (req, res) {
 	try {
 		const data = {
-			name: "LỄ VU QUY",
+			name: "LỄ THÀNH HÔN",
 			bride: {
 				name: "NHÀ GÁI",
 				farther: {
@@ -74,7 +74,8 @@ info.get("/wedding", async function (req, res) {
 				},
 				address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
 			},
-			time: "9:00 SÁNG",
+			time: "9:00",
+			at: "SÁNG",
 			lunar_date: "Nhầm ngày 02.11 Năm Ất Tỵ",
 		};
 		const result = {
@@ -130,7 +131,7 @@ info.get("/timeline", async function (req, res) {
 			wedding_party: {
 				name: "TIỆC BÁO HỶ",
 				at: "Én Restaurant & Event Space",
-				address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
+				address: "Robot Tower, 308C Điện Biên Phủ, Phường 4, Quận 3, Thành phố Hồ Chí Minh",
 				time: "19h 08.01.2026",
 			},
 		};
