@@ -27,6 +27,19 @@ info.get("/", async function (req, res) {
 				bride: "Mi Mie",
 				groom: "Ky Chin",
 			},
+			music: [
+				`${_staticUrl}public/frontend/assets/musics/Bruno-Mars-Marry-You.mp3?v=${_versionCache}`,
+				`${_staticUrl}public/frontend/assets/musics/I-Wanna-Grow-Old-With-You-Westlife.mp3?v=${_versionCache}`,
+				`${_staticUrl}public/frontend/assets/musics/Nothing-Gonna-Change-My-Love-For-You.mp3?v=${_versionCache}`,
+				`${_staticUrl}public/frontend/assets/musics/only-you-noona.mp3?v=${_versionCache}`,
+				`${_staticUrl}public/frontend/assets/musics/Stephanie-Poetri-I-Love-You-3000.mp3?v=${_versionCache}`,
+				`${_staticUrl}public/frontend/assets/musics/Tyler-Shaw-With-You.mp3?v=${_versionCache}`,
+			],
+			video: {
+				file1: `${_staticUrl}public/frontend/assets/images/thumb_share.jpg?v=${_versionCache}`,
+				file2: `${_staticUrl}public/frontend/assets/images/thumb_share.jpg?v=${_versionCache}`,
+				file3: `${_staticUrl}public/frontend/assets/images/thumb_share.jpg?v=${_versionCache}`,
+			},
 		};
 		const result = {
 			error: 0,
