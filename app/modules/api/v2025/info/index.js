@@ -165,4 +165,52 @@ info.get("/timeline", async function (req, res) {
 	}
 });
 
+info.get("/contact", async function (req, res) {
+	try {
+		const data = {
+			bride: {
+				name: "Mi Mie",
+				phone: "0909123456",
+				zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
+				restaurance: "Nhà hàng Tuấn Thảo",
+				address: "07 Trần Hưng Đạo, Phường Lê Lợi, Lâm Đồng",
+				time: "19h 08.01.2026",
+				map: "https://maps.app.goo.gl/eG4QuwV7UrU8kkBk6",
+			},
+
+			groom: {
+				name: "Ky Chin",
+				phone: "0909654321",
+				zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_groom.jpg?v=${_versionCache}`,
+				restaurance: "Nhà hàng Thanh Hường",
+				address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
+				time: "19h 08.01.2026",
+				map: "https://maps.app.goo.gl/yryk3Pdm1xTJcJ2cA",
+			},
+
+			wedding_party: {
+				name: "TIỆC BÁO HỶ",
+				restaurance: "Én Restaurant & Event Space",
+				address: "Robot Tower, 308C Điện Biên Phủ, Phường 4, Quận 3, Thành phố Hồ Chí Minh",
+				time: "19h 08.01.2026",
+				map: "https://maps.app.goo.gl/k33FBJKtkLEx6v6w5",
+			},
+		};
+		const result = {
+			error: 0,
+			message: "Success",
+			data: data,
+		};
+
+		return utils.common.response(req, res, result);
+	} catch (error) {
+		const result = {
+			error: -1,
+			message: "Error: " + error.message,
+			data: null,
+		};
+		return utils.common.response(req, res, result, 400);
+	}
+});
+
 module.exports = info;
