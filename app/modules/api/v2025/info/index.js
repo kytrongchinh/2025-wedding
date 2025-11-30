@@ -171,17 +171,19 @@ info.get("/contact", async function (req, res) {
 			bride: {
 				name: "Mi Mie",
 				phone: "0909123456",
-				zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
+				// zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
+				// bank: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
 				restaurance: "Nhà hàng Tuấn Thảo",
 				address: "07 Trần Hưng Đạo, Phường Lê Lợi, Lâm Đồng",
 				time: "19h 08.01.2026",
-				map: "https://maps.app.goo.gl/eG4QuwV7UrU8kkBk6",
+				// map: "https://maps.app.goo.gl/eG4QuwV7UrU8kkBk6",
 			},
 
 			groom: {
 				name: "Ky Chin",
 				phone: "0909654321",
-				zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_groom.jpg?v=${_versionCache}`,
+				// zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_groom.jpg?v=${_versionCache}`,
+				// bank: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
 				restaurance: "Nhà hàng Thanh Hường",
 				address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
 				time: "19h 08.01.2026",
@@ -193,7 +195,7 @@ info.get("/contact", async function (req, res) {
 				restaurance: "Én Restaurant & Event Space",
 				address: "Robot Tower, 308C Điện Biên Phủ, Phường 4, Quận 3, Thành phố Hồ Chí Minh",
 				time: "19h 08.01.2026",
-				map: "https://maps.app.goo.gl/k33FBJKtkLEx6v6w5",
+				// map: "https://maps.app.goo.gl/k33FBJKtkLEx6v6w5",
 			},
 		};
 		const result = {
