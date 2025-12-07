@@ -24,8 +24,8 @@ info.get("/", async function (req, res) {
 			name: name,
 			tag: " MILO_TET_",
 			wedding: {
-				bride: "Mi Mie",
-				groom: "Ky Chin",
+				bride: "Trường Mi",
+				groom: "Trọng Chính",
 			},
 			music: [
 				`${_staticUrl}public/frontend/assets/musics/Bruno-Mars-Marry-You.mp3?v=${_versionCache}`,
@@ -65,31 +65,31 @@ info.get("/wedding", async function (req, res) {
 			bride: {
 				name: "NHÀ GÁI",
 				farther: {
-					name: "Nguyễn Văn Bảy",
+					name: "Trần Xông Pha",
 					title: "Anh",
 				},
 				mother: {
-					name: "Nguyễn Thị Hường",
-					title: "Chị",
+					name: "Lê Thị Đông",
+					title: "Dì",
 				},
-				address: "07 Trần Hưng Đạo, Phường Lê Lợi, Lâm Đồng",
+				address: "07 Hoàng Quốc Việt, Đức Lập, Lâm Đồng",
 			},
 
 			groom: {
 				name: "NHÀ TRAI",
 				farther: {
-					name: "Nguyễn Văn Ba",
-					title: "Anh",
+					name: "Kỷ Trọng Văn",
+					title: "Ông",
 				},
 				mother: {
-					name: "Nguyễn Thị Năm",
-					title: "Chị",
+					name: "Huỳnh Thị Hiệp",
+					title: "Bà",
 				},
-				address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
+				address: "Đội 5, Trà Thung, Phù Mỹ Bắc, Gia Lai",
 			},
-			time: "9:00",
+			time: "10:00",
 			at: "SÁNG",
-			lunar_date: "Nhầm ngày 02.11 Năm Ất Tỵ",
+			lunar_date: "Nhầm ngày 06.11 Năm Ất Tỵ",
 		};
 		const result = {
 			error: 0,
@@ -115,13 +115,13 @@ info.get("/timeline", async function (req, res) {
 				ancestral_ceremony: {
 					name: "LỄ GIA TIÊN",
 					at: "Tư gia nhà gái",
-					address: "07 Trần Hưng Đạo, Phường Lê Lợi, Lâm Đồng",
+					address: "07 Hoàng Quốc Việt, Đức Lập, Lâm Đồng",
 					time: "9:00 21.12.2025",
 				},
 				party: {
 					name: "TIỆC RƯỢU",
 					at: "Nhà hàng Tuấn Thảo",
-					address: "07 Trần Hưng Đạo, Phường Lê Lợi, Lâm Đồng",
+					address: "Đường ven Hồ Tây, Đăk Mil",
 					time: "11:00 21.12.2025",
 				},
 			},
@@ -130,13 +130,13 @@ info.get("/timeline", async function (req, res) {
 				ancestral_ceremony: {
 					name: "LỄ GIA TIÊN",
 					at: "Tư gia nhà trai",
-					address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
+					address: "Đội 5, Trà Thung, Phù Mỹ Bắc, Gia Lai",
 					time: "10:00 25.12.2025",
 				},
 				party: {
 					name: "TIỆC RƯỢU",
 					at: "Nhà hàng Thanh Hường",
-					address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
+					address: "37 Nguyễn Du, Bình Dương, Gia Lai",
 					time: "11:30 25.12.2025",
 				},
 			},
@@ -170,23 +170,23 @@ info.get("/contact", async function (req, res) {
 		const data = {
 			bride: {
 				name: "Mi Mie",
-				phone: "0909123456",
-				// zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
+				phone: "033 628 69 81",
+				zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
 				// bank: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
 				restaurance: "Nhà hàng Tuấn Thảo",
-				address: "07 Trần Hưng Đạo, Phường Lê Lợi, Lâm Đồng",
-				time: "19h 08.01.2026",
-				// map: "https://maps.app.goo.gl/eG4QuwV7UrU8kkBk6",
+				address: "Đường ven Hồ Tây, Đăk Mil",
+				time: "11:00 21.12.2025",
+				map: "https://maps.app.goo.gl/eG4QuwV7UrU8kkBk6",
 			},
 
 			groom: {
 				name: "Ky Chin",
-				phone: "0909654321",
-				// zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_groom.jpg?v=${_versionCache}`,
+				phone: "097 256 90 49",
+				zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_groom.jpg?v=${_versionCache}`,
 				// bank: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
 				restaurance: "Nhà hàng Thanh Hường",
-				address: "07 Trần Thủ Độ, Phường Lê Lợi, Lâm Đồng",
-				time: "19h 08.01.2026",
+				address: "37 Nguyễn Du, Bình Dương, Gia Lai",
+				time: "11:30 25.12.2025",
 				map: "https://maps.app.goo.gl/yryk3Pdm1xTJcJ2cA",
 			},
 
@@ -195,7 +195,7 @@ info.get("/contact", async function (req, res) {
 				restaurance: "Én Restaurant & Event Space",
 				address: "Robot Tower, 308C Điện Biên Phủ, Phường 4, Quận 3, Thành phố Hồ Chí Minh",
 				time: "19h 08.01.2026",
-				// map: "https://maps.app.goo.gl/k33FBJKtkLEx6v6w5",
+				map: "https://maps.app.goo.gl/k33FBJKtkLEx6v6w5",
 			},
 		};
 		const result = {
