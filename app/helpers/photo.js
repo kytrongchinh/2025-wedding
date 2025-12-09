@@ -436,7 +436,7 @@ photo.generateCard = async (prefix = "Quý khách", fullName = "", slug = "") =>
 	const filePath = path.join(outputDir, filename);
 	fs.writeFileSync(filePath, buffer);
 	console.log(`✔ ${filename} đã tạo!`);
-	return `media/cards/${filename}`;
+	return `media/uploads/cards/${filename}`;
 };
 
 const QRCode = require("qrcode");
@@ -463,7 +463,7 @@ photo.generateQR = async (url = "", slug = "") => {
 			resolve({
 				filename,
 				filePath,
-				name: `media/qrcodes/${filename}`,
+				name: `media/uploads/qrcodes/${filename}`,
 			});
 		});
 	});
