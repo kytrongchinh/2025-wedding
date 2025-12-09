@@ -250,13 +250,13 @@ app.use(function (req, res, next) {
 });
 
 const mdw = function (req, res, next) {
-	res.locals.pageTitle = "Welcome";
-	res.locals.pageKeywords = "";
-	res.locals.pageDesc = "";
+	res.locals.pageTitle = "Thiệp hồng Chin và Mie gửi bạn";
+	res.locals.pageKeywords = "Nhà vui trăng sáng - Có đôi nên nghĩa - Hỷ kết duyên lành";
+	res.locals.pageDesc = "Nhà vui trăng sáng - Có đôi nên nghĩa - Hỷ kết duyên lành";
 
-	res.locals.ogTitle = "";
-	res.locals.ogDesc = "";
-	res.locals.ogImg = `${_staticUrl}public/frontend/assets/images/thumb_share.jpg?v=${_versionCache}`;
+	res.locals.ogTitle = "Thiệp hồng Chin và Mie gửi bạn";
+	res.locals.ogDesc = "Nhà vui trăng sáng - Có đôi nên nghĩa - Hỷ kết duyên lành";
+	res.locals.ogImg = `${_staticUrl}public/frontend/assets/images/thumb.png?v=${_versionCache}`;
 	res.locals.ogUrl = _baseUrl;
 
 	res.locals.admin_userdata = req.session?.admin_userdata || "";
