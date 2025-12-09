@@ -38,7 +38,7 @@ frontend.get("/", async function (req, res) {
 			invitee: invitee,
 		};
 		if (in_mobile) {
-			return res.redirect(newUrl.toString());
+			// return res.redirect(newUrl.toString());
 		}
 		res.render("index", data);
 	} catch (error) {
