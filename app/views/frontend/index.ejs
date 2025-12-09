@@ -1,12 +1,189 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="zalo-platform-site-verification" content="VDwc18lGSZ8Ct-eRtUyy9LlXg3gtbtjaCp0v" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+<%- include('../layout/frontend/_head') -%>
+<style>
+	/* body {
+		font-family: Arial, sans-serif;
+		margin: 0;
+		padding: 0;
+		background: #fff7d6; 
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 100vh;
+	}
+
+	.container {
+		text-align: center;
+		padding: 20px;
+	}
+
+	.card {
+		margin-bottom: 30px;
+	}
+
+	.card .img,
+	.qr .img {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+
+	.card img {
+		width: 60%;
+
+		border-radius: 12px;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+	}
+
+	.qr {
+		margin-top: 20px;
+	}
+
+	.qr p {
+		font-size: 20px;
+		margin-bottom: 10px;
+		font-weight: 600;
+		color: #7a5500;
+	}
+
+	.qr img {
+		width: 220px;
+		height: 220px;
+		object-fit: contain;
+		padding: 12px;
+		background: white;
+		border-radius: 12px;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+	} */
+
+	body {
+		font-family: Arial, sans-serif;
+		margin: 0;
+		padding: 0;
+		background: #fff7d6; /* vàng pastel nhẹ */
+		min-height: 100vh;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.container {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		gap: 40px;
+		padding: 20px;
+		width: 100%;
+		max-width: 1300px; /* hạn chế quá rộng màn hình lớn */
+	}
+
+	/* 60% cho card */
+	.card {
+		flex: 0 0 60%;
+		display: flex;
+		justify-content: center;
+	}
+
+	/* 40% cho QR */
+	.qr {
+		flex: 0 0 40%;
+		text-align: center;
+	}
+
+	.card .img,
+	.qr .img {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+	}
+
+	.card img {
+		width: 100%;
+		/* max-width: 550px; */
+		border-radius: 12px;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+	}
+
+	.qr p {
+		font-size: 20px;
+		margin-bottom: 10px;
+		font-weight: 600;
+		color: #7a5500;
+	}
+
+	.qr img {
+		width: 200px;
+		height: 200px;
+		object-fit: contain;
+		padding: 12px;
+		background: white;
+		border-radius: 12px;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+	}
+
+	/* Responsive cho mobile */
+	@media (max-width: 768px) {
+		.container {
+			flex-direction: column;
+			gap: 20px;
+		}
+
+		.card,
+		.qr {
+			flex: 0 0 100%;
+		}
+
+		.card img {
+			max-width: 95%;
+		}
+
+		.qr img {
+			width: 180px;
+			height: 180px;
+		}
+	}
+</style>
 <body>
-    <p>Xin chào</p>
+	<div class="container">
+		<div class="card">
+			<div class="img">
+				<% if (invitee?.thumb) { %>
+				<img src="<%=_staticUrl + invitee?.thumb%>" alt="" />
+				<% } else { %>
+				<img src="<%=_staticUrl%>public/frontend/assets/images/thumb.png" alt="" />
+				<% } %>
+			</div>
+		</div>
+		<div class="qr">
+			<p>Vui lòng quét mã QR để xem thiệp</p>
+			<div class="img">
+				<% if (invitee?.thumb) { %>
+				<img src="<%=_staticUrl + invitee?.qr%>" alt="" />
+				<% } else { %>
+				<img src="<%=_staticUrl%>public/frontend/assets/images/qr.png" alt="" />
+
+				<% }%>
+			</div>
+		</div>
+	</div>
 </body>
-</html>
+<script>
+	function detectDevice() {
+		const ua = navigator.userAgent;
+
+		const isMobileUA = /Android|iPhone|iPad|iPod|Windows Phone|webOS|BlackBerry/i.test(ua);
+		const isSmallScreen = window.innerWidth <= 768;
+
+		if (isMobileUA || isSmallScreen) return "mobile";
+		return "desktop";
+	}
+</script>
+<% if (in_mobile) { %>
+<script>
+	setTimeout(() => {
+		window.location.href = "<%=link%>";
+	}, 1500);
+</script>
+<% } %> <%- include('../layout/frontend/_end') -%>

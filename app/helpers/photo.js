@@ -395,4 +395,78 @@ photo.resizeCustom = function (data, des, typeUpload) {
 	});
 };
 
+const { createCanvas, loadImage } = require("canvas");
+const path = require("path");
+
+photo.generateCard = async (prefix = "Quý khách", fullName = "", slug = "") => {
+	const width = 1200;
+	const height = 630;
+
+	const canvas = createCanvas(width, height);
+	const ctx = canvas.getContext("2d");
+
+	const bg = await loadImage("./public/frontend/assets/images/thumb.png");
+	ctx.drawImage(bg, 0, 0, width, height);
+
+	const baseX = 400;
+	const baseY = 555;
+
+	// 1. Vẽ prefix: (prefix truyền vào)
+	ctx.fillStyle = "#a00000";
+	ctx.font = "italic 26px Montserrat";
+	ctx.fillText(prefix, baseX, baseY);
+
+	// Lấy chiều rộng của prefix + 1 space
+	const prefixWidth = ctx.measureText(prefix + " ").width;
+
+	// 2. Vẽ tên (bold + lớn)
+	ctx.font = "italic bold 35px Montserrat";
+	ctx.fillText(fullName, baseX + prefixWidth, baseY);
+
+	const buffer = canvas.toBuffer("image/png");
+	const outputDir = path.join(process.cwd(), "media/cards");
+
+	// nếu thư mục chưa tồn tại → tự tạo
+	if (!fs.existsSync(outputDir)) {
+		fs.mkdirSync(outputDir, { recursive: true });
+	}
+
+	// tạo tên file
+	const filename = `card-${slug}${Date.now()}.png`;
+	const filePath = path.join(outputDir, filename);
+	fs.writeFileSync(filePath, buffer);
+	console.log(`✔ ${filename} đã tạo!`);
+	return `media/cards/${filename}`;
+};
+
+const QRCode = require("qrcode");
+photo.generateQR = async (url = "", slug = "") => {
+	return new Promise((resolve, reject) => {
+		QRCode.toBuffer(url, { type: "png" }, (err, buffer) => {
+			if (err) return reject(err);
+
+			const outputDir = path.join(process.cwd(), "media/qrcodes");
+
+			// nếu thư mục chưa tồn tại → tạo mới
+			if (!fs.existsSync(outputDir)) {
+				fs.mkdirSync(outputDir, { recursive: true });
+			}
+
+			// tên file
+			const filename = `qrcode-${slug}-${Date.now()}.png`;
+			const filePath = path.join(outputDir, filename);
+
+			// lưu file
+			fs.writeFileSync(filePath, buffer);
+
+			// trả về tên file (hoặc đường dẫn)
+			resolve({
+				filename,
+				filePath,
+				name: `media/qrcodes/${filename}`,
+			});
+		});
+	});
+};
+
 module.exports = photo;

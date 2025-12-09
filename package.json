@@ -49,7 +49,7 @@
 		"or": "^0.2.0",
 		"otplib": "^12.0.1",
 		"pagination": "^0.4.6",
-		"qrcode": "^1.5.1",
+		"qrcode": "^1.5.4",
 		"saslprep": "^1.0.3",
 		"sharp": "0.32.1",
 		"slugify": "^1.4.5",
