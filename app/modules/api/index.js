@@ -35,7 +35,7 @@ api.get("/create-img", async function (req, res) {
 			setTimeout(async () => {
 				const invitee = invitees[index];
 				const img = await helpers.photo.generateCard(invitee?.title, invitee?.name, invitee?.slug_name);
-				const link = `${_baseUrl}?to=${invitee?.slug_name}`;
+				const link = `https://thiephong.online?to=${invitee?.slug_name}`;
 				const qrgen = await helpers.photo.generateQR(link, invitee?.slug_name);
 				weddingModel.updateOne(COLLECTIONS.INVITEE, { _id: invitee?._id }, { thumb: img, link: link, qr: qrgen?.name });
 			}, index * 3000);

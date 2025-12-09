@@ -424,7 +424,7 @@ photo.generateCard = async (prefix = "Quý khách", fullName = "", slug = "") =>
 	ctx.fillText(fullName, baseX + prefixWidth, baseY);
 
 	const buffer = canvas.toBuffer("image/png");
-	const outputDir = path.join(process.cwd(), "media/cards");
+	const outputDir = path.join(process.cwd(), "media/uploads/cards");
 
 	// nếu thư mục chưa tồn tại → tự tạo
 	if (!fs.existsSync(outputDir)) {
@@ -445,7 +445,7 @@ photo.generateQR = async (url = "", slug = "") => {
 		QRCode.toBuffer(url, { type: "png" }, (err, buffer) => {
 			if (err) return reject(err);
 
-			const outputDir = path.join(process.cwd(), "media/qrcodes");
+			const outputDir = path.join(process.cwd(), "media/uploads/qrcodes");
 
 			// nếu thư mục chưa tồn tại → tạo mới
 			if (!fs.existsSync(outputDir)) {
