@@ -167,12 +167,13 @@ info.get("/timeline", async function (req, res) {
 
 info.get("/contact", async function (req, res) {
 	try {
+		let show_bank = await helpers.setting.get_value_setting("show_bank");
 		const data = {
 			bride: {
 				name: "Mi Mie",
 				phone: "033 628 69 81",
 				zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
-				// bank: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
+				bank: show_bank == 1 ? `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}` : "",
 				restaurance: "Nhà hàng Tuấn Thảo",
 				address: "Đường ven Hồ Tây, Đăk Mil",
 				time: "11:00 21.12.2025",
@@ -183,7 +184,7 @@ info.get("/contact", async function (req, res) {
 				name: "Ky Chin",
 				phone: "097 256 90 49",
 				zalo_qr: `${_staticUrl}public/frontend/assets/images/zalo_qr_groom.jpg?v=${_versionCache}`,
-				// bank: `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}`,
+				bank: show_bank == 1 ? `${_staticUrl}public/frontend/assets/images/zalo_qr_bride.jpg?v=${_versionCache}` : "",
 				restaurance: "Nhà hàng Thanh Hường",
 				address: "37 Nguyễn Du, Bình Dương, Gia Lai",
 				time: "11:30 25.12.2025",
