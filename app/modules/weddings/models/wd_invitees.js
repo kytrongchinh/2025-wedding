@@ -11,8 +11,10 @@ const objSchema = new Schema(
 		thumb: String,
 		qr: String,
 		accept: { type: Boolean, default: false },
+		accept_to: String,
 		from: String,
 		status: { type: Number, default: 0 },
+		is_copy: { type: Boolean, default: false },
 		update_by: String,
 	},
 	{ timestamps: true }

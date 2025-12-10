@@ -81,4 +81,19 @@ api.get("/update-slug-name", async function (req, res) {
 	}
 });
 
+api.post("/update-invite", async function (req, res) {
+	try {
+		const requestData = helpers.admin.filterXSS(req.body);
+		let id = requestData.id;
+		const weddingModel = require("../../modules/weddings/models");
+		weddingModel.updateOne(COLLECTIONS.INVITEE, { _id: id }, { is_copy: true });
+
+		return res.json({ status: 1, invitees: invitees.length });
+	} catch (error) {
+		console.log(error, "sssss");
+
+		return res.json({ status: 0 });
+	}
+});
+
 module.exports = api;

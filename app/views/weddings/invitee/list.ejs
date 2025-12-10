@@ -13,12 +13,15 @@
 <section class="content-header">
     <form class="form-inline">
         <div class="form-group">
+            
             <input type="text" name="from_date"  value="<%=helpers.admin.get_query_data(query_get,'from_date')%>" class="form-control datepicker" placeholder="From date">
             <input type="text" name="to_date"  value="<%=helpers.admin.get_query_data(query_get,'to_date')%>" class="form-control datepicker" placeholder="To date">
             <input type="text" name="where"  value="<%=helpers.admin.get_query_data(query_get,'where')%>" class="form-control " style="min-width: 500px;" placeholder="Condition Advance">
         </div>
         <button type="submit" class="btn btn-primary">Filter</button>
         <div class="right pull-right">
+            <a href="<%= mod_url%>/create-slug" data-original-title="" title=""><button type="button" class="btn btn-primary">Create Slug</button></a>
+            <a href="<%= mod_url%>/create-link" data-original-title="" title=""><button type="button" class="btn btn-primary">Create link</button></a>
             <%- helpers.admin.render_menu_buttons(mod_route,admin_userdata)%>
         </div>
     </form>
@@ -83,9 +86,15 @@
                                 </td>
                                 <%}%>
                                 <% Object.keys(fields).forEach(function(field){ %>
-                                <td>
-                                    <%- helpers.admin.get_field_value_custom(field, row[field], fields[field])%>
-                                </td>
+                                    <% if (field =="link") { %>
+                                        <td>
+                                            <span class="text-muted  pull-right" style="text-align: justify;" data-id="<%=row["_id"]%>" onclick="click_copy(this)" data-link="<%=row[field]%>" title="<%=row[field]%>">Copy Link</span>
+                                        </td>
+                                    <% } else { %>
+                                        <td>
+                                            <%- helpers.admin.get_field_value_custom(field, row[field], fields[field])%>
+                                        </td>
+                                    <% } %>
                                 <% }); %>
 
                                 <td>
@@ -113,3 +122,30 @@
 </div><!--/.content-wrapper-->
 <%- include('../../layout/admin/_footer') -%>
 <%- include('../../layout/admin/_end') -%>
+
+<script>
+    function click_copy(e) {
+		let $this = $(e);
+		var content = $this.data("link");
+        const id = $this.data("id");
+		copyTextToClipboard(content);
+        $this.html("Đã copy");
+        $.ajax({
+            type: "post",
+            url: base_url  + "api/update-invite",
+            data: {
+                id: id,
+                _csrf  : token_value ,
+            },
+            dataType: "json",
+            success: function (response) {
+                
+            }
+        });
+
+        // setTimeout(()=>{
+        //     $this.html("Copy Link");
+
+        // }, 2000)
+	}
+</script>

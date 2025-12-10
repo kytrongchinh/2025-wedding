@@ -95,8 +95,9 @@ invitee.post("/accept", async function (req, res) {
 		if (!slug_name) {
 			throw new ValidationError(ERRORS.INVALID_DATA, requestData);
 		}
+		const accept_to = requestData.to || "";
 
-		const item = await weddingModal.updateOne(COLLECTIONS.INVITEE, { status: 1, slug_name: slug_name }, { accept: true });
+		const item = await weddingModal.updateOne(COLLECTIONS.INVITEE, { status: 1, slug_name: slug_name }, { accept: true, accept_to: accept_to });
 
 		const result = {
 			error: 0,
