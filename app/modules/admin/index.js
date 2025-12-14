@@ -193,7 +193,7 @@ admin.post("/verify-2fa", async function (req, res) {
 				}
 			}
 
-			if (["dev", "develop", "staging"].includes(appConfig.env) === false) {
+			if (["dev", "develop", "staging","production"].includes(appConfig.env) === false) {
 				//verify otp token
 				const isValid = verifyOTPToken(postData.otpToken, user.secret2FA);
 				if (!isValid) {
