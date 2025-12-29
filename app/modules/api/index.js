@@ -95,9 +95,9 @@ api.post("/update-invite", async function (req, res) {
 	}
 });
 
-api.post("/photo-from", async function (req, res) {
+api.get("/photo-from", async function (req, res) {
 	try {
-		const requestData = helpers.admin.filterXSS(req.body);
+		const requestData = helpers.admin.filterXSS(req.query);
 		let id = requestData.id;
 		const weddingModel = require("../../modules/weddings/models");
 		const from = req.query?.from || "";
