@@ -87,6 +87,31 @@
                                         <td>
                                             <img src="https://drive.google.com/thumbnail?id=<%=row['id_image']%>&sz=s100`" />
                                         </td>
+                                    <% } else if (field == "tags") { %>
+                                      <td style="width: 200px !important;">
+                                        <%- helpers.admin.get_field_value_custom(field, row[field], fields[field])%>
+                                        <i class="fa fa-edit edit-tag" data-id="<%= row._id %>"></i>
+                                          <div class="tag-result-<%= row._id %>" style="display: none;" width="100%"></div>
+                                        
+                                          <div class="tag-show-<%= row._id %>" style="display: none;" width="100%">
+                                            <textarea
+                                              rows="2"
+                                              cols="2"
+                                              class="form-control medium tag-input"
+                                              name="tags-<%= row._id %>"
+                                              id="tags-<%= row._id %>"
+                                              placeholder="Add tags"><%= row[field] ? row[field].join(', ') : '' %></textarea>
+
+                                            <button
+                                              type="button"
+                                              class="btn btn-primary btn-sm btn-add-tag"
+                                              data-id="<%= row._id %>"
+                                              style="margin-top: 5px;">
+                                              Add Tags
+                                            </button>
+                                          </div>
+                                        
+                                      </td>
                                     <% } else { %>
                                         <td>
                                             <%- helpers.admin.get_field_value_custom(field, row[field], fields[field])%>
@@ -119,3 +144,52 @@
 </div><!--/.content-wrapper-->
 <%- include('../../layout/admin/_footer') -%>
 <%- include('../../layout/admin/_end') -%>
+
+<script>
+  $(document).ready(function () {
+    // Click edit icon → show textarea
+    $(document).on('click', '.edit-tag', function () {
+      $(this).hide();
+      const id = $(this).data('id');
+      $('.tag-show-' + id).slideToggle();
+    });
+
+    // Click Add Tags → send data to server
+    $(document).on('click', '.btn-add-tag', function () {
+      const id = $(this).data('id');
+      const tags = $('#tags-' + id).val();
+
+      if (!tags.trim()) {
+        alert('Please enter tags');
+        return;
+      }
+
+      $.ajax({
+        url:   '<%= mod_url%>/add-tags', // API của bạn
+        type: 'POST',
+        data: {
+          id: id,
+          tags: tags,
+          _csrf: token_value 
+        },
+        success: function (res) {
+          // alert('Tags added successfully');
+          let htmklTags = '';
+          htmklTags += '<div class="render-field">';
+          tags.split(",").forEach(function(tag, index) {
+            htmklTags += "<span class='label label-info' style='margin-right:5px;'>" + tag.trim() + "</span>";
+          });
+          htmklTags += '</div>';
+
+          // Optional: hide form after success
+          $('.tag-show-' + id).slideUp();
+          $('.tag-result-' + id).html(htmklTags).show();
+        },
+        error: function () {
+          alert('Error adding tags');
+        }
+      });
+    });
+  });
+</script>
+

@@ -533,4 +533,20 @@ photo.post("/drive", async function (req, res) {
 		return helpers.base.redirect(res, mod_config.route + "/");
 	}
 });
+
+photo.post("/add-tags", async function (req, res) {
+	try {
+		let postData = { ...req.body };
+		const { id, tags } = postData;
+
+		let create = await moduleModel.updateOne(mod_config.collection, { _id: id }, { tags: tags.split(",") });
+		if (create.status) {
+			res.json({ success: true });
+		} else {
+			res.json({ success: false });
+		}
+	} catch (e) {
+		res.json({ success: false });
+	}
+});
 module.exports = photo;

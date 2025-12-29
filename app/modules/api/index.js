@@ -91,7 +91,20 @@ api.post("/update-invite", async function (req, res) {
 		return res.json({ status: 1, invitees: invitees.length });
 	} catch (error) {
 		console.log(error, "sssss");
+		return res.json({ status: 0 });
+	}
+});
 
+api.post("/photo-from", async function (req, res) {
+	try {
+		const requestData = helpers.admin.filterXSS(req.body);
+		let id = requestData.id;
+		const weddingModel = require("../../modules/weddings/models");
+		const from = req.query?.from || "";
+		weddingModel.updateOne(COLLECTIONS.PHOTO, { status: 1, from: { $in: ["", null] } }, { from: from });
+
+		return res.json({ status: 1, invitees: invitees.length });
+	} catch (error) {
 		return res.json({ status: 0 });
 	}
 });
