@@ -24,14 +24,16 @@ photo.get("/", async function (req, res) {
 		if (requestData?.from) {
 			conditions["from"] = from;
 		}
-		const slug_name = slugify(requestData?.tags, {
-			replacement: "-", // replace spaces with replacement character, defaults to `-`
-			remove: undefined, // remove characters that match regex, defaults to `undefined`
-			lower: false, // convert to lower case, defaults to `false`
-			strict: false, // strip special characters except replacement, defaults to `false`
-			locale: "vi", // language code of the locale to use
-			trim: true,
-		});
+		// const slug_name = slugify(requestData?.tags, {
+		// 	replacement: "-", // replace spaces with replacement character, defaults to `-`
+		// 	remove: undefined, // remove characters that match regex, defaults to `undefined`
+		// 	lower: false, // convert to lower case, defaults to `false`
+		// 	strict: false, // strip special characters except replacement, defaults to `false`
+		// 	locale: "vi", // language code of the locale to use
+		// 	trim: true,
+		// });
+
+		const slug_name = requestData?.tags;
 		if (requestData?.tags) {
 			// conditions["tags"] = { $in: [slug_name] };
 			conditions["tags"] = { $regex: new RegExp(slug_name, "i") };
