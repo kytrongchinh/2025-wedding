@@ -101,9 +101,9 @@ api.get("/photo-from", async function (req, res) {
 		let id = requestData.id;
 		const weddingModel = require("../../modules/weddings/models");
 		const from = req.query?.from || "";
-		weddingModel.updateOne(COLLECTIONS.PHOTO, { status: 1, from: { $in: ["", null] } }, { from: from });
+		const up = await weddingModel.updateMany(COLLECTIONS.PHOTO, { status: 1, from: { $in: ["", null] } }, { from: from });
 
-		return res.json({ status: 1, invitees: invitees.length });
+		return res.json({ status: 1, up });
 	} catch (error) {
 		return res.json({ status: 0 });
 	}
