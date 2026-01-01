@@ -91,4 +91,38 @@ photo.get("/detail", async function (req, res) {
 	}
 });
 
+const getBase64FromUrl = async (url) => {
+	const res = await fetch(url);
+	const buffer = Buffer.from(await res.arrayBuffer());
+	return buffer.toString("base64");
+};
+photo.get("/download", async function (req, res) {
+	try {
+		const requestData = helpers.admin.filterXSS(req.query);
+		let id = requestData.id;
+		if (!id) {
+			throw new ValidationError(ERRORS.INVALID_DATA, requestData);
+		}
+
+		const item = await weddingModal.findOne(COLLECTIONS.PHOTO, { status: 1, _id: id });
+		const base64 = await getBase64FromUrl(item?.image);
+		const result = {
+			error: 0,
+			message: "Success",
+			data: {
+				base64,
+			},
+		};
+		return utils.common.response(req, res, result);
+	} catch (error) {
+		console.log(error, "download");
+		const result = {
+			error: MESSAGES?.[error?.message]?.CODE || -1,
+			message: MESSAGES?.[error?.message]?.MSG || error.message,
+			data: error?.data || null,
+		};
+		return utils.common.response(req, res, result, 400);
+	}
+});
+
 module.exports = photo;
