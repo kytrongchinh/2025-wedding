@@ -94,7 +94,13 @@ photo.get("/detail", async function (req, res) {
 const getBase64FromUrl = async (url) => {
 	const res = await fetch(url);
 	const buffer = Buffer.from(await res.arrayBuffer());
-	return buffer.toString("base64");
+	// lấy mime type từ response header
+	const mimeType =
+		res.headers.get("content-type") || "image/png";
+
+	const base64 = buffer.toString("base64");
+
+	return `data:${mimeType};base64,${base64}`;
 };
 photo.get("/download", async function (req, res) {
 	try {
